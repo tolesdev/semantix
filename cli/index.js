@@ -4,6 +4,8 @@ const semver = require('semver');
 const pkg = require('../package.json');
 const log = require('../classes/Logger');
 
+const commitHashLength = 4;
+
 execa
     .stdout('git', ['--version'])
     .then(stdout => {
@@ -14,9 +16,17 @@ execa
     });
 
 execa
-    .stdout('git', ['log', '--oneline', '--first-parent master', '--no-merges'])
+    .stdout('git', [
+        'log',
+        '--pretty=oneline',
+        '--abbrev-commit',
+        `--abbrev=${commitHashLength}`,
+        '--first-parent',
+        '--no-merges'
+    ])
     .then(stdout => {
-        console.log(stdout);
+        let output = stdout.split('/n');
+        console.log(output);
     })
     .catch(err => {
         log.error(err);
