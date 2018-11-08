@@ -3,9 +3,6 @@ const logSymbols = require('log-symbols');
 const boxen = require('boxen');
 
 class Logger {
-    newLine() {
-        console.log('\n');
-    }
     error(output) {
         const logOutput = output => console.log(`${logSymbols.error} ${output}`);
         console.log(`${chalk.bgBlue.white(' semantix ')}${chalk.bgRed(' ERROR ')}  `);
@@ -36,7 +33,7 @@ class Logger {
         console.log(
             chalk.red(
                 boxen(
-                    chalk.white(msg),
+                    chalk.white(`🚨   ${msg}`),
                     {
                         padding: 1,
                         margin: 1,
