@@ -1,13 +1,17 @@
 {
   "name": "semantix",
   "version": "0.0.0",
-  "main": "index.js",
+  "main": "./cli/index.js",
   "author": "btoles <brennan.toles@gmail.com>",
   "engines": {
     "node": ">=7.6.0"
   },
   "bin": {
     "semantix": "./cli/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/btoles/semantix.git"
   },
   "license": "MIT",
   "dependencies": {

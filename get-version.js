@@ -1,13 +1,16 @@
 const execa = require('execa');
 const semver = require('semver');
+const path = require('path');
+const pkg = require(path.resolve(process.cwd(), 'package.json'));
 
 module.exports = async () => {
     try {
-        const currentVersion = await getCurrentVersion();
-        const nextVersion = await getNextVersion(currentVersion);
-        console.log('currentVersion: ', currentVersion);
-        console.log('nextVersion: ', nextVersion);
-        return nextVersion;
+        const versionInfo = await getCurrentVersion();
+        const next = await getNextVersion(versionInfo);
+        return { 
+            current: versionInfo.version, 
+            next 
+        };
     }
     catch(error) {
         console.error(error);
@@ -30,9 +33,13 @@ const regex = {
      */
     splitOnFirstSpace: new RegExp(`^([a-zA-Z0-9]{${commitHashLength}}) `),
     /**
-     * Matches on v#.#.# format at the end of a string.
+     * Matches on "v#.#.#" format at the end of a string.
      */
-    gitRefsTag: /v\d\.\d\.\d$/
+    gitRefsTag: /v\d\.\d\.\d$/,
+    /**
+     * Mathces on "* branchName" format to find current branch.
+     */
+    gitCurrentBranch: /\*{1} (.*)/
 };
 const releaseMapping = {
     'BREAKING': 'major',
@@ -40,37 +47,49 @@ const releaseMapping = {
     'BREAKING CHANGES': 'major',
     'feat': 'minor',
     'perf': 'minor',
+    'init': 'patch',
     'chore': 'patch',
     'fix': 'patch',
     'test': 'patch',
     'docs': 'patch'
 };
-const release = new Map();
-
-Object.keys(releaseMapping).forEach(key => {
-    release.set(key, releaseMapping[key]);
-});
+const release = Object.keys(releaseMapping)
+    .reduce((acc, key) => {
+        acc.set(key, releaseMapping[key]);
+        return acc;
+    }, new Map());
 
 const getCurrentVersion = async () => {
-    const gitLsRemote = await execa.stdout('git', [ 'ls-remote', '--tags' ]);
-
-    // If there are no remotes start the versioning at 0.0.0
-    if (gitLsRemote.includes('No remote configured')) {
-        return { sha: null, version: 'v0.0.0' };
-    } else {
-        const versionRef = gitLsRemote
+    const gitLsRemote = await execa.stdout('git', [ 'ls-remote', '--tags', pkg.repository.url ]);
+    const getLatestVersion = versionList => {
+        return versionList
             .split('\n')
             // Filter out refs that are not tags
             .filter(ref => regex.gitRefsTag.test(ref))
             // Take the most recent refs/tags
             .pop();
-
-        // Split the commit message into object with the sha and version properties
-        const [ sha, refName ] = versionRef.split('\t');
-        // Get version off of the end of the ref
-        const version = refName.split('/').pop();
-        return { sha, version };
     }
+    /**
+     * We want to allow the option to generate a current version for local git repositories.
+     * In the case of no remotes start from version zero.
+     */
+    if (gitLsRemote.includes('No remote configured')) {
+        const gitTags = await execa.stdout('git', [ 'tag' ]);
+        if (gitTags === '') {
+            return { sha: null, version: 'v0.0.0' };
+        }
+        return { sha: null, version: getLatestVersion(gitTags) };
+    }
+
+    /**
+     * Check the remote release branch tags for the most recent version.
+     */
+    const versionRef = getLatestVersion(gitLsRemote);
+    // Split the commit message into object with the sha and version properties
+    const [ sha, refName ] = versionRef.split('\t');
+    // Get version off of the end of the ref
+    const version = refName.split('/').pop();
+    return { sha, version };
 }
 
 const getNextVersion = async currentVersion => {    
@@ -106,6 +125,7 @@ const getNextVersion = async currentVersion => {
         .map(commit => {                
             const [ prefix, message ] = commit.message.split(':').map(m => m.trim());
             const [ keyword, scope ] = prefix.replace(regex.keywordScope, '$1,$2').split(',');
+            // console.log(`${keyword}${scope ? `(${scope})` : ''}: ${message}`);
             return { message, keyword, scope };
         });
 
@@ -116,5 +136,5 @@ const getNextVersion = async currentVersion => {
         }
     });
 
-    return nextVersion;
+    return `v${nextVersion}`;
 }
