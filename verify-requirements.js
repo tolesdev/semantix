@@ -21,6 +21,8 @@ module.exports = async () => {
     if (!semver.satisfies(process.version, pkg.engines.node)) {
         throw new Error(`Node version out of date, expected ${pkg.engines.node} but found ${process.version}.`);
     }
+
+    return true;
 }; 
 
 const requirements = {

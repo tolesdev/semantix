@@ -1,43 +1,41 @@
 #!/usr/bin/env node
 
 const getVersion = require('../get-version');
-const getCurrentBranch = require('../get-branch');
 const createRelease = require('../create-release');
 const verifyRequirements = require('../verify-requirements');
+const verifyRelease = require('../verify-release');
 const yargs = require('yargs');
 const pkg = require('../package.json');
 const log = require('../classes/Logger');
 
-const verify = async () => {    
-    try {
-        await verifyRequirements();
-    }
-    catch (error) {
-        log.billboardError(error.message);
-    };
-}
-
 yargs
     .command('current','Generate the current version', {}, async () => {
-        await verify();
-        const version = await getVersion();
-        console.log(version.current);
-    })
-    .command('next','Generate the next version', {}, async () => {
-        await verify();
-        const version = await getVersion();
-        console.log(version.next);
-    })
-    .command('release', 'Create a release on your release branch', {}, async args => {
-        await verify();        
         try {
-            const releaseBranch = args.b || args.branch,
-                  currentBranch = await getCurrentBranch();
-            if (currentBranch === releaseBranch) {
-                await createRelease(args, pkg);
+            if (await verifyRequirements()) {
+                console.log((await getVersion()).current);
             }
         }
         catch (error) {
+            log.billboardError(error.message);
+        };
+    })
+    .command('next','Generate the next version', {}, async () => {
+        try {
+            if (await verifyRequirements()) {
+                console.log((await getVersion()).next);
+            }
+        }
+        catch (error) {
+            log.billboardError(error.message);
+        };
+    })
+    .command('release', 'Create a release', {}, async args => {
+        try {
+            if (await verifyRequirements() && await verifyRelease(args.b || args.branch)) {
+                await createRelease(await getVersion().next);
+            }
+        }
+        catch (e) {
             log.error(error.message);
         }
     })
