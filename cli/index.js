@@ -5,7 +5,6 @@ const createRelease = require('../create-release');
 const verifyRequirements = require('../verify-requirements');
 const verifyRelease = require('../verify-release');
 const yargs = require('yargs');
-const pkg = require('../package.json');
 const log = require('../classes/Logger');
 
 yargs
@@ -31,12 +30,13 @@ yargs
     })
     .command('release', 'Create a release', {}, async args => {
         try {
+            // console.log(await verifyRelease(args.b || args.branch));
             if (await verifyRequirements() && await verifyRelease(args.b || args.branch)) {
-                await createRelease(await getVersion().next);
+                await createRelease((await getVersion()).next);
             }
         }
-        catch (e) {
-            log.error(error.message);
+        catch (error) {
+            log.billboardError(error.message);
         }
     })
     .option('branch', {
@@ -50,5 +50,10 @@ yargs
         describe: 'Git repository URL',
         type: 'string'
     })
+    // .option('no-ci', {
+    //     default: false,
+    //     describe: 'Do not run in CI environment',
+    //     type: 'string'
+    // })
     .help()
     .argv;
