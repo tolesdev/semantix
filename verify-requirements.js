@@ -19,7 +19,7 @@ module.exports = async () => {
     
     // Verify Node Version
     if (!semver.satisfies(process.version, pkg.engines.node)) {
-        throw new Error(`Node version out of date, expected ${pkg.engines.node} but found ${process.version}.`);
+        throw new Error(`Node version mismatch, expected ${pkg.engines.node} but found ${process.version}.`);
     }
 
     return true;

@@ -12,10 +12,10 @@ const packagePath = path.resolve(process.cwd(), 'package.json');
 const consumerPkg = require(packagePath);
 
 yargs
-    .command('current','Generate the current version', {}, async () => {
+    .command(['latest', 'current'],'Generate the latest version', {}, async () => {
         try {
             if (await verifyRequirements()) {
-                console.log((await getVersion()).current);
+                console.log((await getVersion()).latest);
             }
         }
         catch (error) {

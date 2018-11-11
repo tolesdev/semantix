@@ -6,11 +6,11 @@ const { MAJOR, MINOR, PATCH } = require('./constants');
 
 module.exports = async () => {
     try {
-        const versionInfo = await getCurrentVersion();
+        const versionInfo = await getLatestVersion();
         const next = await getNextVersion(versionInfo);
         return { 
             next,
-            current: versionInfo.version
+            latest: versionInfo.version
         };
     }
     catch(error) {
@@ -51,9 +51,9 @@ const releaseMapping = {
 };
 const release = new Map(Object.entries(releaseMapping));
 
-const getCurrentVersion = async () => {
+const getLatestVersion = async () => {
     const gitLsRemote = await execa.stdout('git', [ 'ls-remote', '--tags' ]);
-    const getCurrent = versionList => {
+    const getLatest = versionList => {
         return versionList
             .split('\n')
             // Filter out refs that are not version tags
@@ -77,7 +77,7 @@ const getCurrentVersion = async () => {
             .pop();
     }
     /**
-     * We want to allow the option to generate a current version for local git repositories.
+     * We want to allow the option to generate a latest version for local git repositories.
      * In the case of no remotes start from version zero.
      */
     if (gitLsRemote.includes('No remote configured') || gitLsRemote === '') {
@@ -85,13 +85,13 @@ const getCurrentVersion = async () => {
         if (gitTags === '') {
             return { sha: null, version: '0.0.0' };
         }
-        return { sha: null, version: getCurrent(gitTags).version };
+        return { sha: null, version: getLatest(gitTags).version };
     }
     
-    return getCurrent(gitLsRemote);
+    return getLatest(gitLsRemote);
 }
 
-const getNextVersion = async currentVersion => {    
+const getNextVersion = async latestVersion => {    
     const gitLog = await execa.stdout('git', [ 'log', '--pretty=oneline', '--first-parent', '--no-merges', '--reverse' ]);
     if (gitLog.includes('does not have any commits')) {
         throw new Error('No commits found for this repository.');
@@ -99,7 +99,7 @@ const getNextVersion = async currentVersion => {
     const gitLogSplit = gitLog.split('\n');
     // If not found findIndex returns -1 which will equal out to the desired splice index at 0
     const spliceIndex = 1 + gitLogSplit.findIndex(commit => {
-        return commit.includes(currentVersion.sha);
+        return commit.includes(latestVersion.sha);
     });
     const commits = gitLogSplit
         /**
@@ -135,10 +135,10 @@ const getNextVersion = async currentVersion => {
         });
 
     // Increment the version based on the commits after the last tagged version
-    return commits.reduce((current, commit) => {
+    return commits.reduce((latest, commit) => {
         if ([MAJOR, MINOR, PATCH].includes(release.get(commit.keyword))) {
-            return semver.inc(current, release.get(commit.keyword));
+            return semver.inc(latest, release.get(commit.keyword));
         }
-        return current;
-    }, currentVersion.version);
+        return latest;
+    }, latestVersion.version);
 }
