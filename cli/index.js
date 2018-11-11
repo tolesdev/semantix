@@ -49,7 +49,7 @@ yargs
                 const nextVersion = (await getVersion()).next;
                 consumerPkg.version = nextVersion;
                 fs.writeFileSync(packagePath, JSON.stringify(consumerPkg, null, 2));
-                console.log(`🚀   Successfully update package to version ${nextVersion}`)
+                console.log(`🚀 Successfully update package to version ${nextVersion}`)
             }
         }
         catch (error) {
