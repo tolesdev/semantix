@@ -3,20 +3,20 @@
 Semantix is a tool that analyzes your repository's commit history and generates the appropriate semantic version based off keywords found in the commit message.
 ## 🚀 Installation
 ```sh
-npm install --save semantix
+npm install -g semantix
 ```
 ## 🔨 Usage
 ```sh
 semantix <command> [--repsoitory] [--branch]
 ```
-### current
+### *current*
 Returns the version of the latest release.
-### next
+### *next*
 Returns the next release version.
-### update
+### *update*
 Updates the package.json with the next release version.
-### --repository, -r
+### --*repository*, -*r*
 Specify the repository to be considered during the release process.
 
-### --branch, -b
+### --*branch*, -*b*
 Specify the branch from which to release.
