@@ -1,0 +1,21 @@
+stages:
+  - name: publish
+    if: branch = master
+
+language: node_js
+
+node_js:
+  - "10"
+
+jobs:
+  include:
+    - stage: publish
+      on:
+        tags: false
+      cache: npm
+      script: node ./cli/index.js update
+      deploy:
+        skip_cleanup: true
+        provider: npm
+        email: $NPM_EMAIL
+        api_key: $NPM_TOKEN

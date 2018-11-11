@@ -9,8 +9,8 @@ module.exports = async () => {
         const versionInfo = await getCurrentVersion();
         const next = await getNextVersion(versionInfo);
         return { 
-            current: versionInfo.version, 
-            next 
+            next,
+            current: versionInfo.version
         };
     }
     catch(error) {
@@ -19,11 +19,11 @@ module.exports = async () => {
 }
 
 const regex = {
-    keywordScope: /(.+)\((.+)\)/,
+    keywordScope: /([^\(]*)\(?([^\)]*)\)?/,
     /**
      * Check commit messages for refs information.
      */
-    logsOrigin: /^\x28.+\x29(.+)/,
+    logsOrigin: /^\x28.+\x29\s(.+)/,
     /**
      * Matches on "v#.#.#" format at the end of a string.
      */
@@ -31,7 +31,11 @@ const regex = {
     /**
      * Matches expected commit message format for semver tracking.
      */
-    gitCommitMessageFormat: /([^:]+):(.+)/
+    gitCommitMessageFormat: /^\s*([^:\s]+)\s*:(.+)/,
+    /**
+     * Split the result of our git log call into sha group and message group.
+     */
+    splitGitLog: /(\S+)\s(.+)/
 };
 const releaseMapping = {
     'BREAKING': MAJOR,
@@ -63,9 +67,9 @@ const getCurrentVersion = async () => {
             })
             .map(ref => ({
                 sha: ref[0],
-                version: ref[1]
+                version: semver.valid(ref[1])
             }))
-            // Properly sort the version list
+            // Sort versions ascending
             .sort((a, b) => {
                 return semver.gt(a.version, b.version);
             })
@@ -76,10 +80,10 @@ const getCurrentVersion = async () => {
      * We want to allow the option to generate a current version for local git repositories.
      * In the case of no remotes start from version zero.
      */
-    if (gitLsRemote.includes('No remote configured')) {
+    if (gitLsRemote.includes('No remote configured') || gitLsRemote === '') {
         const gitTags = await execa.stdout('git', [ 'tag' ]);
         if (gitTags === '') {
-            return { sha: null, version: 'v0.0.0' };
+            return { sha: null, version: '0.0.0' };
         }
         return { sha: null, version: getCurrent(gitTags).version };
     }
@@ -93,6 +97,7 @@ const getNextVersion = async currentVersion => {
         throw new Error('No commits found for this repository.');
     }
     const gitLogSplit = gitLog.split('\n');
+    // If not found findIndex returns -1 which will equal out to the desired splice index at 0
     const spliceIndex = 1 + gitLogSplit.findIndex(commit => {
         return commit.includes(currentVersion.sha);
     });
@@ -101,10 +106,10 @@ const getNextVersion = async currentVersion => {
          * Drop the commit with the latest version tag and it's predecessors\
          * If no latest verison tag then return all and start from the beginning
          */
-        .splice(currentVersion.sha ? spliceIndex : 0)
+        .splice(spliceIndex)
         // Split the commit message into object with the sha and message properties
         .map(output => {
-            const [ , sha, message ] = output.match(/(\S+)(.+)/);
+            const [ , sha, message ] = output.match(regex.splitGitLog);
             return { sha, message };
         })
         // Remove refs information from commit message
@@ -112,27 +117,28 @@ const getNextVersion = async currentVersion => {
             // Drop refs information from log message
             // i.e. (origin -> blah) test(feature1): commit
             if (regex.logsOrigin.test(commit.message)) {
-                commit.message = commit.message.replace(regex.logsOrigin, "$1");
+                commit.message = commit.message.match(regex.logsOrigin)[1];
                 return commit;
             }
             return commit;
         })
         // Split prefix into keyword and scope variables - format: keyword(scope)
         .map(commit => {
-            const [ , prefix, message ] = commit.message.match(regex.gitCommitMessageFormat).map(m => m.trim());
-            const [ keyword, scope ] = prefix.replace(regex.keywordScope, '$1,$2').split(',');
-            // console.log(`${keyword}${scope ? `(${scope})` : ''}: ${message}`);
-            return { message, keyword, scope };
+            const matches = commit.message.match(regex.gitCommitMessageFormat);            
+            if (matches) {
+                // Drop the match, we only want to save the groups from the match
+                const [ , prefix, message ] = matches;
+                const [ , keyword, scope ] = prefix.match(regex.keywordScope);
+                return { message, keyword, scope };
+            }
+            return {};
         });
 
-    let nextVersion = currentVersion.version;
-
     // Increment the version based on the commits after the last tagged version
-    commits.forEach(commit => {
+    return commits.reduce((current, commit) => {
         if ([MAJOR, MINOR, PATCH].includes(release.get(commit.keyword))) {
-            nextVersion = semver.inc(nextVersion, release.get(commit.keyword));
+            return semver.inc(current, release.get(commit.keyword));
         }
-    });
-
-    return `v${nextVersion}`;
+        return current;
+    }, currentVersion.version);
 }

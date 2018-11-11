@@ -4,8 +4,12 @@ const getVersion = require('../get-version');
 const createRelease = require('../create-release');
 const verifyRequirements = require('../verify-requirements');
 const verifyRelease = require('../verify-release');
-const yargs = require('yargs');
 const log = require('../classes/Logger');
+const yargs = require('yargs');
+const path = require('path');
+const fs = require('fs');
+const packagePath = path.resolve(process.cwd(), 'package.json');
+const consumerPkg = require(packagePath);
 
 yargs
     .command('current','Generate the current version', {}, async () => {
@@ -33,6 +37,19 @@ yargs
             // console.log(await verifyRelease(args.b || args.branch));
             if (await verifyRequirements() && await verifyRelease(args.b || args.branch)) {
                 await createRelease((await getVersion()).next);
+            }
+        }
+        catch (error) {
+            log.billboardError(error.message);
+        }
+    })
+    .command('update', 'Update package.json with the next version', {}, async () => {
+        try {
+            if (await verifyRequirements()) {
+                const nextVersion = (await getVersion()).next;
+                consumerPkg.version = nextVersion;
+                fs.writeFileSync(packagePath, JSON.stringify(consumerPkg, null, 2));
+                console.log(`🚀   Successfully update package to version ${nextVersion}`)
             }
         }
         catch (error) {
