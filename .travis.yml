@@ -1,4 +1,6 @@
 stages:
+  - latest
+  - next
   - name: publish
     if: branch = master
 
@@ -9,6 +11,16 @@ node_js:
 
 jobs:
   include:
+    - stage: latest
+      on:
+        tags: false
+      cache: npm
+      script: node ./cli/index.js latest
+    - stage: next
+      on:
+        tags: false
+      cache: npm
+      script: node ./cli/index.js next
     - stage: publish
       on:
         tags: false
