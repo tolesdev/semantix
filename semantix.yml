@@ -1,0 +1,10 @@
+release:
+    BREAKING: major
+    feat: minor
+    perf: minor
+    init: patch
+    chore: patch
+    fix: patch
+    test: patch
+    docs: patch
+branch: master
