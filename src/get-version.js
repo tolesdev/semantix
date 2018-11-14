@@ -2,9 +2,9 @@ const execa = require('execa');
 const semver = require('semver');
 const { MAJOR, MINOR, PATCH } = require('../constants');
 
-module.exports = async releaseMapping => {
+module.exports = async (repository, releaseMapping) => {
     try {
-        const versionInfo = await getLatestVersion();
+        const versionInfo = await getLatestVersion(repository);
         const next = await getNextVersion(versionInfo, releaseMapping);
         return { 
             next,
@@ -36,9 +36,9 @@ const regex = {
     splitGitLog: /(\S+)\s(.+)/
 };
 
-const getLatestVersion = async () => {
-    const gitLsRemote = await execa.stdout('git', [ 'ls-remote', '--tags' ]);
-    const getLatest = versionList => {
+const getLatestVersion = async repository => {
+    const gitLsRemote = await execa.stdout('git', [ 'ls-remote', '--tags', repository ]);
+    const getLatest = (gitSource, versionList) => {
         return versionList
             .split('\n')
             // Filter out refs that are not version tags
@@ -47,6 +47,10 @@ const getLatestVersion = async () => {
             .map(ref => ref.split('\t'))
             // Extract the versions from the refs
             .map(ref => {
+                if (gitSource === 'local') {
+                    // Local tags won't have a commit hash in the output so add a null value
+                    ref.unshift(null);
+                }
                 ref[1] = ref[1].match(regex.gitRefsVersionTag)[0];
                 return ref;
             })
@@ -70,10 +74,10 @@ const getLatestVersion = async () => {
         if (gitTags === '') {
             return { sha: null, version: '0.0.0' };
         }
-        return { sha: null, version: getLatest(gitTags).version };
+        return getLatest('local', gitTags);
     }
     
-    return getLatest(gitLsRemote);
+    return getLatest('remote', gitLsRemote);
 }
 
 const getNextVersion = async (latestVersion, releaseMapping) => {    

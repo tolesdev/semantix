@@ -56,10 +56,10 @@ npx semantix <command> [option]
 |`update`|Updates the package.json with the next release version.|
 
 ### Options
-|Option|Alias|Description|
-|:----:|:-----:|:---|
-|`--branch`|`-b`|Specify the branch from which to release.|
-|`--repository`|`-r`|Specify the repository to be considered during the release process. 
+|Option|Description|
+|:----:|:---|
+|`--branch`|Specify the branch from which to release.|
+|`--repository`|Specify the repository to be considered during the release process. 
 
 📃[Back to Table of Content](#table-of-content)
 
