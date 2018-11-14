@@ -10,14 +10,20 @@
         - [⚙ Options](#options)
 - [🌈 Order of Precedence](#order-of-precedence)
 - [📂 Configuration](#configuration)
+# 📈 Progress
+- [x] Generate current and latest version
+- [x] Update *package.json* with latest version
+- [ ] Tag release branch with release versions
+    - [ ] GitLab
+    - [ ] GitHub
+- [ ] Publish package to npm registry
+
 # Installation
 ```
 npm install --save semantix
 ```
 📃[Back to Table of Content](#table-of-content)
 # Usage
-> *NOTE: Javascript API will be coming in a later version*
-
 ## Commit Format
 `keyword`: A predefined string indicating how much to bump the project version.
 
