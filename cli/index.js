@@ -33,20 +33,20 @@ const release = config && config.release || {
 };
 
 yargs
-    .command(['latest', 'current'],'Generate the latest version', {}, async () => {
+    .command(['latest', 'current'],'Generate the latest version', {}, async args => {
         try {
             if (await verifyRequirements()) {
-                console.log((await getVersion(release)).latest);
+                console.log((await getVersion(args.repository, release)).latest);
             }
         }
         catch (error) {
             log.billboardError(error.message);
         };
     })
-    .command('next','Generate the next version', {}, async () => {
+    .command('next','Generate the next version', {}, async args => {
         try {
             if (await verifyRequirements()) {
-                console.log((await getVersion(release)).next);
+                console.log((await getVersion(args.repository, release)).next);
             }
         }
         catch (error) {
@@ -55,19 +55,18 @@ yargs
     })
     .command('release', 'Create a release', {}, async args => {
         try {
-            // console.log(await verifyRelease(args.b || args.branch));
-            if (await verifyRequirements() && await verifyRelease(args.branch || args.b)) {
-                await createRelease((await getVersion(release)).next);
+            if (await verifyRequirements() && await verifyRelease(args.branch)) {
+                await createRelease((await getVersion(args.repository, release)).next);
             }
         }
         catch (error) {
             log.billboardError(error.message);
         }
     })
-    .command('update', 'Update package.json with the next version', {}, async () => {
+    .command('update', 'Update package.json with the next version', {}, async args => {
         try {
             if (await verifyRequirements()) {
-                const nextVersion = (await getVersion(release)).next;
+                const nextVersion = (await getVersion(args.repository, release)).next;
                 consumerPkg.version = nextVersion;
                 fs.writeFileSync(packagePath, JSON.stringify(consumerPkg, null, 4));
                 console.log(`🚀  Successfully update package to version ${nextVersion}`)
@@ -78,21 +77,14 @@ yargs
         }
     })
     .option('branch', {
-        alias: 'b',
         default: config && config.branch,
         describe: 'The release branch',
         type: 'string'
     })
     .option('repository', {
-        alias: 'r',
         default: config && config.repository,
         describe: 'Git repository URL',
         type: 'string'
     })
-    // .option('no-ci', {
-    //     default: false,
-    //     describe: 'Do not run in CI environment',
-    //     type: 'string'
-    // })
     .help()
     .argv;
