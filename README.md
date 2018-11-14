@@ -30,6 +30,7 @@ npm install --save semantix
 `scope`: An ***optional*** argument specifying the scope of the commit -- used in the release process to annotate release tags and generate changelogs.
 
 ```
+keyword: 🍔🥓🍟
 keyword(scope): This is my commit message!
 ```
 

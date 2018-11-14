@@ -1,4 +1,4 @@
-const { GITHUB_TOKEN, GITHUB_URL, GITLAB_TOKEN, GITLAB_URL } = require('./environment');
+const { GITHUB_TOKEN, GITHUB_URL, GITLAB_TOKEN, GITLAB_URL } = require('../environment');
 const octokit = require('@octokit/rest');
 const { Projects } = require('gitlab');
 

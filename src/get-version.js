@@ -1,7 +1,6 @@
 const execa = require('execa');
 const semver = require('semver');
-const path = require('path');
-const { MAJOR, MINOR, PATCH } = require('./constants');
+const { MAJOR, MINOR, PATCH } = require('../constants');
 
 module.exports = async releaseMapping => {
     try {

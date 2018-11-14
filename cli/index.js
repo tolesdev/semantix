@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 
-const getVersion = require('../get-version');
-const createRelease = require('../create-release');
-const verifyRequirements = require('../verify-requirements');
-const verifyRelease = require('../verify-release');
+const getVersion = require('../src/get-version');
+const createRelease = require('../src/create-release');
+const verifyRequirements = require('../src/verify-requirements');
+const verifyRelease = require('../src/verify-release');
 const log = require('../classes/Logger');
 const yaml = require('js-yaml');
 const yargs = require('yargs');
