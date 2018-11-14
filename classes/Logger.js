@@ -43,6 +43,21 @@ class Logger {
             )
         );
     }
+    
+    billboardWarning(msg) {
+        console.log(
+            chalk.yellow(
+                boxen(
+                    chalk.white(`⚠   ${msg}`),
+                    {
+                        padding: 1,
+                        margin: 1,
+                        borderStyle: 'single'
+                    }
+                )
+            )
+        );
+    }
 }
 
 module.exports = new Logger();

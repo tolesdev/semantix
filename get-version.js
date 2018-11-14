@@ -1,13 +1,12 @@
 const execa = require('execa');
 const semver = require('semver');
 const path = require('path');
-const pkg = require(path.resolve(process.cwd(), 'package.json'));
 const { MAJOR, MINOR, PATCH } = require('./constants');
 
-module.exports = async () => {
+module.exports = async releaseMapping => {
     try {
         const versionInfo = await getLatestVersion();
-        const next = await getNextVersion(versionInfo);
+        const next = await getNextVersion(versionInfo, releaseMapping);
         return { 
             next,
             latest: versionInfo.version
@@ -37,19 +36,6 @@ const regex = {
      */
     splitGitLog: /(\S+)\s(.+)/
 };
-const releaseMapping = {
-    'BREAKING': MAJOR,
-    'BREAKING CHANGE': MAJOR,
-    'BREAKING CHANGES': MAJOR,
-    'feat': MINOR,
-    'perf': MINOR,
-    'init': PATCH,
-    'chore': PATCH,
-    'fix': PATCH,
-    'test': PATCH,
-    'docs': PATCH
-};
-const release = new Map(Object.entries(releaseMapping));
 
 const getLatestVersion = async () => {
     const gitLsRemote = await execa.stdout('git', [ 'ls-remote', '--tags' ]);
@@ -91,7 +77,8 @@ const getLatestVersion = async () => {
     return getLatest(gitLsRemote);
 }
 
-const getNextVersion = async latestVersion => {    
+const getNextVersion = async (latestVersion, releaseMapping) => {    
+    const release = new Map(Object.entries(releaseMapping));
     const gitLog = await execa.stdout('git', [ 'log', '--pretty=oneline', '--first-parent', '--no-merges', '--reverse' ]);
     if (gitLog.includes('does not have any commits')) {
         throw new Error('No commits found for this repository.');
