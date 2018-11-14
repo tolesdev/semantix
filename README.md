@@ -40,7 +40,7 @@ keyword(scope): This is my commit message!
 *Example*
 ```json
 "scripts": {
-    "upgrade": "semantix upgrade" 
+    "update": "semantix update" 
 }
 ```
 ## Command Line
