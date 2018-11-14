@@ -1,7 +1,7 @@
 const execa = require('execa');
 const semver = require('semver');
 const findVersions = require('find-versions');
-const pkg = require('./package.json');
+const pkg = require('../package.json');
 
 module.exports = async () => {
     // Verify Git Version
