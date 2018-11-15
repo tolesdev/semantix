@@ -13,6 +13,7 @@
 # 📈 Progress
 - [x] Generate current and latest version
 - [x] Update *package.json* with latest version
+- [x] Private repository support
 - [ ] Tag release branch with release versions
     - [ ] GitLab
     - [ ] GitHub
@@ -59,7 +60,6 @@ npx semantix <command> [option]
 |Option|Description|
 |:----:|:---|
 |`--branch`|Specify the branch from which to release.|
-|`--repository`|Specify the repository to be considered during the release process. 
 
 📃[Back to Table of Content](#table-of-content)
 
@@ -74,7 +74,6 @@ It is recommended to use `semantix.yml` for all your configuration and only use 
 ## *semantix.yml*
 ```yml
 branch: master
-repository: https://github.com/btoles/semantix.git
 release:
     BREAKING: major
     feat: minor
@@ -89,8 +88,5 @@ release:
 |---|----|----|:---:|
 |`release`|object|Mapping of keywords to semantic version increment amounts.|*See example*
 |`branch`|string|The branch to be considered for releases.|*See example*
-|`repository`|string|The repository URL|*None*
-
-> 🚨 **NOTE**: If **repository** is omitted from `semantix.yml` and `--options`, *semantix* will fall back on the value defined in `package.json`.
 
 📃[Back to Table of Content](#table-of-content)

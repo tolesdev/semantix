@@ -1,22 +1,20 @@
 const execa = require('execa');
 const semver = require('semver');
+const getRemote = require('./get-remote');
+const verifyCommits = require('./verify-commits');
 const { MAJOR, MINOR, PATCH } = require('../constants');
 
-module.exports = async (repository, releaseMapping) => {
-    try {
-        const versionInfo = await getLatestVersion(repository);
-        const next = await getNextVersion(versionInfo, releaseMapping);
-        return { 
-            next,
-            latest: versionInfo.version
-        };
-    }
-    catch(error) {
-        console.error(error);
-    }
-}
+module.exports = async releaseMapping => {
+    await verifyCommits();
+    const versionInfo = await getLatestVersion(await getRemote());
+    const next = await getNextVersion(versionInfo, releaseMapping);
+    return { next, latest: versionInfo.version };
+};
 
 const regex = {
+    /**
+     * Captures the keyword and scope
+     */
     keywordScope: /([^\(]*)\(?([^\)]*)\)?/,
     /**
      * Check commit messages for refs information.
@@ -36,8 +34,19 @@ const regex = {
     splitGitLog: /(\S+)\s(.+)/
 };
 
-const getLatestVersion = async repository => {
-    const gitLsRemote = await execa.stdout('git', [ 'ls-remote', '--tags', repository ]);
+const getLatestVersion = async remote => {
+    /**
+     * We want to allow the option to generate a latest version for local git repositories.
+     * In the case of no version tags, start from version zero.
+     */
+    if (!remote) {
+        const gitTags = await execa.stdout('git', [ 'tag' ]);
+        if (gitTags === '') {
+            return { sha: null, version: '0.0.0' };
+        }
+        return getLatest('local', gitTags);
+    }
+    const gitLsRemote = await execa.stdout('git', [ 'ls-remote', '--tags', remote ? remote : '' ]);
     const getLatest = (gitSource, versionList) => {
         return versionList
             .split('\n')
@@ -65,22 +74,10 @@ const getLatestVersion = async repository => {
             // Take the latest version { sha, version }
             .pop();
     }
-    /**
-     * We want to allow the option to generate a latest version for local git repositories.
-     * In the case of no remotes start from version zero.
-     */
-    if (gitLsRemote.includes('No remote configured') || gitLsRemote === '') {
-        const gitTags = await execa.stdout('git', [ 'tag' ]);
-        if (gitTags === '') {
-            return { sha: null, version: '0.0.0' };
-        }
-        return getLatest('local', gitTags);
-    }
-    
     return getLatest('remote', gitLsRemote);
 }
 
-const getNextVersion = async (latestVersion, releaseMapping) => {    
+const getNextVersion = async (latestVersion, releaseMapping) => {
     const release = new Map(Object.entries(releaseMapping));
     const gitLog = await execa.stdout('git', [ 'log', '--pretty=oneline', '--first-parent', '--no-merges', '--reverse' ]);
     if (gitLog.includes('does not have any commits')) {

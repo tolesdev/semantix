@@ -11,10 +11,7 @@
             "program": "${workspaceFolder}\\cli\\index.js",
             "args": [
                 "next"
-            ],
-            "env": {
-                "GH_TOKEN" : "token!"
-            }
+            ]
         }
     ]
 }
