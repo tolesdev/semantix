@@ -12,7 +12,7 @@ module.exports = async () => {
     }
     
     // Verify Git Repository Exists
-    const gitRepoExistsOutput = await execa.stdout('git', [ 'show-ref' ]);
+    const gitRepoExistsOutput = await execa.stdout('git', [ 'rev-parse', '--git-dir' ]);
     if (gitRepoExistsOutput.includes('Not a git repository')) {
         throw new Error(`No git repository found.`);
     }
