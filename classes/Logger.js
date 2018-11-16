@@ -1,5 +1,4 @@
 const chalk = require('chalk');
-const logSymbols = require('log-symbols');
 const boxen = require('boxen');
 
 class Logger {

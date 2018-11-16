@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+
 const yaml = require('js-yaml');
 const yargs = require('yargs');
 const path = require('path');
@@ -30,6 +31,7 @@ const run = async () => {
             const version = await getVersion(release);
             
             yargs
+                .scriptName('semantix')
                 .command(['latest', 'current'],'Generate the latest version', {}, async () => {
                     console.log(version.latest);                    
                 })
