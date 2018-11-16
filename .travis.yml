@@ -15,17 +15,17 @@ jobs:
       on:
         tags: false
       cache: npm
-      script: node ./cli/index.js latest
+      script: node ./src/index.js latest
     - stage: next
       on:
         tags: false
       cache: npm
-      script: node ./cli/index.js next
+      script: node ./src/index.js next
     - stage: publish
       on:
         tags: false
       cache: npm
-      script: node ./cli/index.js update
+      script: node ./src/index.js update
       deploy:
         skip_cleanup: true
         provider: npm
