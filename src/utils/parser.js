@@ -8,7 +8,7 @@ class Parser {
      * @returns {Object[]} parsedCommits - { sha, message, keyword, scope }
      */
     static async commits(commits, start) {
-        // If not found findIndex returns -1 which will equal out to the desired splice index at 0
+        // If not found findIndex returns -1 which will equal out to the desired splice index at 0 
         const spliceIndex = 1 + commits.findIndex(commit => {
             return commit.includes(start);
         });

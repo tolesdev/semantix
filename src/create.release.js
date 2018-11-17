@@ -1,36 +1,32 @@
-// const octokit = require('@octokit/rest');
-const { GITHUB_TOKEN, GITHUB_URL, GITLAB_TOKEN, GITLAB_URL } = require('./utils/constants');
+const Git = require('./providers/git.provider');
+const GitHub = require('./services/github.service');
+const GitLab = require('./services/gitlab.service');
+const Parser = require('./utils/parser');
+const Generate = require('./utils/generate');
+const Version = require('./providers/version.provider');
+const verifyGitProvider = require('./verify.git.provider');
+const { GITHUB_TOKEN, GITLAB_TOKEN } = require('./utils/constants');
 
+module.exports = async (releaseBranch, releaseMapping) => {
+    const commits = await Git.commits();
+    const next = await Version.next(releaseMapping);
+    const current = await Version.current();
+    // Drop commits that don't match our keyword mapping before generating notes
+    const keywordFilter = commit => releaseMapping[commit.keyword] !== undefined;
+    const parsed = (await Parser.commits(commits, current.sha)).filter(keywordFilter);
+    const releaseNotes = await Generate.releaseNotes(releaseMapping, parsed);
 
-module.exports = async version => {
-    if (GITHUB_TOKEN) {
-        // const gitHub = new octokit({
-        //     baseUrl: GITHUB_URL,
-        //     type: 'token',
-        //     token: GITHUB_TOKEN
-        // });
-        // console.log({
-        //     owner: 'semantix',
-        //     tag: `v${version}`,
-        //     message: 'Semantix Release',
-        //     repo: await getRemote(),
-        //     type: 'commit',
-        //     object: branch.sha
-        // });
-        // const result = await gitHub.gitdata.createTag({
-        //     owner: 'btoles',
-        //     tag: `v${version}`,
-        //     message: 'Semantix Release',
-        //     repo: await getRemote(),
-        //     type: 'commit',
-        //     object: branch.sha
-        // });
-        // console.log(result);
+    if (await verifyGitProvider()) {
+        if (GITHUB_TOKEN) {
+            const git = new GitHub();
+            await git.createTag(`v${next}`, await Git.headSha(), releaseNotes);
+            await git.createRelease(releaseBranch, `v${next}`, releaseNotes);
+            console.log(`🌠 Successfully created release v${next}!`);
+        }
+        if (GITLAB_TOKEN) {
+            const git = new GitLab();
+            await git.createTag(`v${next}`, await Git.headSha(), releaseNotes);
+            console.log(`🌠 Successfully created release v${next}!`);
+        }
     }
-    if (GITLAB_TOKEN) {
-        // const gitLab = new Projects({
-        //     url: GITLAB_URL,
-        //     token: GITLAB_TOKEN
-        // });
-    }
-}
+};

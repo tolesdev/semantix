@@ -1,8 +1,8 @@
-const execa = require('execa');
+const Git = require('./providers/git.provider');
 
 module.exports = async branchName => {
-    const headSha = await execa.stdout('git', [ 'rev-parse', 'HEAD' ]);
-    const localSha = await execa.stdout('git', [ 'rev-parse', branchName ]);
+    const headSha = await Git.headSha();
+    const localSha = await Git.localSha(branchName);
     if (headSha === localSha) {
         return true;
     }

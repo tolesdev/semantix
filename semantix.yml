@@ -5,6 +5,7 @@ release:
     feat: minor
     perf: minor
     refactor: minor
+    ci: patch
     init: patch
     chore: patch
     fix: patch
