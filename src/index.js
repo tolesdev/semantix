@@ -10,7 +10,6 @@ const Version = require('./providers/version.provider');
 const verifyRelease = require('../src/verify.release');
 const verifyCommits = require('./verify.commits');
 const packagePath = path.resolve(process.cwd(), 'package.json');
-const consumerPkg = require(packagePath);
 
 const run = async () => {
     try {
@@ -36,6 +35,13 @@ const run = async () => {
                     }
                 })
                 .command('update', 'Update package.json with the next version', {}, async args => {
+                    let consumerPkg = null;
+                    try {
+                        consumerPkg = require(packagePath);
+                    }
+                    catch (e) {
+                        log.billboardError("Unable to locate package.json in the current directory.");
+                    }
                     const config = new Configuration(args);
                     const nextVersion = await Version.next(config.mapping());
                     consumerPkg.version = nextVersion;
