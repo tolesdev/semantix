@@ -49,14 +49,11 @@ const run = async () => {
                     console.log(`🚀  Successfully update package to version ${nextVersion}`);
                 })
                 .option('branch', {
-                    describe: 'The release branch',
                     type: 'string'
                 })
                 .help()
                 .argv;
         }
-    }
-    catch (error) {
         log.billboardError(error.message);
     };
 };
