@@ -16,7 +16,7 @@ const run = async () => {
         if (await verifyRequirements() && await verifyCommits()) {            
             yargs
                 .scriptName('semantix')
-                .command(['latest', 'current'],'Generate the latest version', {}, async () => {
+                .command(['current', 'latest'],'Generate the latest version', {}, async () => {
                     console.log((await Version.current()).version);                    
                 })
                 .command('next','Generate the next version', {}, async args => {
@@ -26,8 +26,8 @@ const run = async () => {
                 .command('release', 'Create a release', {}, async args => {
                     const config = new Configuration(args);
                     try {
-                        if (await verifyRelease(args.branch)) {
-                            await createRelease(await Version.next(config.mapping()));
+                        if (await verifyRelease(config.branch())) {
+                            await createRelease(config.branch(), config.mapping());
                         }
                     }
                     catch (error) {
@@ -54,8 +54,10 @@ const run = async () => {
                 .help()
                 .argv;
         }
+    }
+    catch (error) {
         log.billboardError(error.message);
-    };
+    }
 };
 
 run();

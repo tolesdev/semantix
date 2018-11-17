@@ -1,6 +1,8 @@
 stages:
   - latest
   - next
+  - name: release
+    if: branch = master
   - name: publish
     if: branch = master
 
@@ -21,6 +23,11 @@ jobs:
         tags: false
       cache: npm
       script: node ./src/index.js next
+    - stage: release
+      on:
+        tags: false
+      cache: npm
+      script: node ./src/index.js release
     - stage: publish
       on:
         tags: false

@@ -52,11 +52,12 @@ class Version {
     /**
      * Gets the next version.
      * @param {object} mapping - Definition for the keyword mapping
+     * @returns {string} version - The next version for the project X.X.X
      */
     static async next(mapping) {
         const current = await this.current();
         const release = new Map(Object.entries(mapping));
-        const commits = await Parser.commits(await Git.commits(), await this.current());
+        const commits = await Parser.commits(await Git.commits(), current.sha);
 
         // Increment the version based on the commits after the last tagged version
         return commits.reduce((latest, commit) => {

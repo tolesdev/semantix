@@ -32,7 +32,7 @@ class Logger {
         console.log(
             chalk.red(
                 boxen(
-                    chalk.white(`🚨   ${msg}`),
+                    chalk.white(`🚨  ${msg}`),
                     {
                         padding: 1,
                         margin: 1,
@@ -47,7 +47,7 @@ class Logger {
         console.log(
             chalk.yellow(
                 boxen(
-                    chalk.white(`⚠   ${msg}`),
+                    chalk.white(`⚠  ${msg}`),
                     {
                         padding: 1,
                         margin: 1,

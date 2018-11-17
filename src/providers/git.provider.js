@@ -1,4 +1,5 @@
 const execa = require('execa');
+const verifyGitProvider = require('../verify.git.provider');
 const { GITLAB_TOKEN, GITHUB_TOKEN } = require('../utils/constants');
 
 /**
@@ -31,9 +32,6 @@ class Git {
      */
     static async remote() {
         let origin = null;
-        if (GITLAB_TOKEN && GITHUB_TOKEN) {        
-            throw new Error('Found both GitLab and GitHub token, please supply one or the other.');
-        }
         try {
             origin = await execa.stdout('git', [ 'config', '--get', 'remote.origin.url' ]);
         }
@@ -45,12 +43,14 @@ class Git {
         if (!GITLAB_TOKEN && !GITHUB_TOKEN) {
             return origin;
         }
-        // If the remote has a token we need to swap it out with the provided token
-        if (/.+:.+@/.test(origin)) {
-            return origin.replace(/^(https?:\/\/[^:]+):.+@(.+)/, `$1:${ GITLAB_TOKEN || GITHUB_TOKEN }@$2`)
+        if (await verifyGitProvider()) {
+            // If the remote has a token we need to swap it out with the provided token
+            if (/.+:.+@/.test(origin)) {
+                return origin.replace(/^(https?:\/\/[^:]+):.+@(.+)/, `$1:${ GITLAB_TOKEN || GITHUB_TOKEN }@$2`)
+            }
+            // If there is no token present we add the provided token
+            return origin.replace(/^(https?:\/\/)(.+)/, `$1oauth2:${GITLAB_TOKEN || GITHUB_TOKEN}@$2`);
         }
-        // If there is no token present we add the provided token
-        return origin.replace(/^(https?:\/\/)(.+)/, `$1oauth2:${GITLAB_TOKEN || GITHUB_TOKEN}@$2`);
     }
 
     /**
@@ -100,6 +100,57 @@ class Git {
     static async commits() {
         const log = await this.log();
         return log.split('\n');
+    }
+
+    /**
+     * Gets the owner name from the remote repository.
+     * @static
+     * @async
+     * @returns {string} owner - Name of the repository owner
+     */
+    static async owner() {
+        return (await this.remote()).match(/\/(\w+)\/(\w+).git$/)[1];
+    }
+
+    /**
+     * Gets the name of the repository.
+     * @static
+     * @async
+     * @returns {string} repoistoryName - Name of the repository
+     */
+    static async repositoryName() {
+        return (await this.remote()).match(/\/(\w+)\/(\w+).git$/)[2];
+    }
+
+    /**
+     * Returns the SHA of the commit pointed to by HEAD.
+     * @static
+     * @async
+     * @returns {string} sha - SHA of the commit where HEAD is pointed
+     */
+    static async headSha() {
+        try {
+            return await execa.stdout('git', [ 'rev-parse', 'HEAD' ]);
+        }
+        catch (e) {
+            throw new Error('There was a problem trying to retrieve the SHA of HEAD.');
+        }
+    }
+
+    /**
+     * Returns the SHA of the head of the local branch.
+     * @static
+     * @async
+     * @param {string} branchName - The branch to consider
+     * @returns {string} sha - SHA of the head of the local branch
+     */
+    static async localSha(branchName) {
+        try {
+            return await execa.stdout('git', [ 'rev-parse', branchName ]);
+        }
+        catch (e) {
+            throw new Error(`There was a problem trying to retrieve the HEAD of ${branchName}.`);
+        }        
     }
 }
 
