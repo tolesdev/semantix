@@ -1,6 +1,6 @@
 {
     "name": "semantix",
-    "version": "0.6.1",
+    "version": "0.7.1",
     "main": "./src/index.js",
     "author": "btoles <brennan.toles@gmail.com>",
     "engines": {
