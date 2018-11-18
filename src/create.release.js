@@ -20,6 +20,7 @@ module.exports = async (releaseBranch, releaseMapping) => {
         if (GITHUB_TOKEN) {
             const git = new GitHub();
             await git.createTag(`v${next}`, await Git.headSha(), releaseNotes);
+            console.log(`💎 Successfully created tag ${tag}.`);
             await git.createRelease(releaseBranch, `v${next}`, releaseNotes);
             console.log(`🌠 Successfully created release v${next}!`);
         }

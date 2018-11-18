@@ -6,8 +6,7 @@ module.exports = {
     MAJOR,
     MINOR,
     PATCH,
-    GITHUB: 'GitHub',
-    GITLAB: 'GitLab',
+    CONFIG_FILE: '.semantix.yml',
     DEFAULTS: {
         RELEASE: {
             BREAKING: MAJOR,

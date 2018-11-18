@@ -31,13 +31,11 @@ class GitHub {
                 email: 'semantix@github.com',
                 type: 'commit'
             });
-            const response = await this.fetch('/repos/:owner/:repo/git/tags', {
+            await this.fetch('/repos/:owner/:repo/git/tags', {
                 method: 'POST',
                 body
             });
-            if (response.ok) {
-                return await this.createReference(`refs/tags/${tag}`, object);
-            }
+            return true;
         }
         catch (e) {
             throw new Error('There was a problem creating the release tag.');

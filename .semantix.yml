@@ -1,4 +1,3 @@
-repository: https://github.com/btoles/semantix.git
 branch: master
 release:
     BREAKING: major

@@ -14,10 +14,11 @@
 - [x] Generate current and latest version
 - [x] Update *package.json* with latest version
 - [x] Private repository support
-- [ ] Tag release branch with release versions
+- [ ] Generate CHANGELOG.md
+- [x] Tag release branch with release versions
     - [ ] GitLab
-    - [ ] GitHub
-- [ ] Publish package to npm registry
+    - [x] GitHub
+    - [x] Release Notes
 
 # Installation
 ```
@@ -64,20 +65,22 @@ npx semantix <command> [option]
 📃[Back to Table of Content](#table-of-content)
 
 # Order of Precedence
-If no additional options are given to *semantix* then the default values will be used. Otherwise, values will be read from the the command line `--options` first and the missing variables filled in with the `semantix.yml` configuration file.  
+If no additional options are given to *semantix* then the default values will be used. Otherwise, values will be read from the the command line `--options` first and the missing variables filled in with the `.semantix.yml` configuration file.  
 
-It is recommended to use `semantix.yml` for all your configuration and only use the command line `--options` as overrides.
+It is recommended to use `.semantix.yml` for all your configuration and only use the command line `--options` as overrides.
 
 
 # Configuration
-> *You may store your configuration and override some defaults in a `semantix.yml` file*
-## *semantix.yml*
+> *You may store your configuration and override some defaults in a `.semantix.yml` file*
+## *.semantix.yml*
 ```yml
 branch: master
 release:
     BREAKING: major
     feat: minor
     perf: minor
+    refactor: minor
+    ci: patch
     init: patch
     chore: patch
     fix: patch
