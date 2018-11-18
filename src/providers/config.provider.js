@@ -7,16 +7,18 @@ const { DEFAULTS, CONFIG_FILE } = require('../utils/constants');
 class Configuration {
     constructor(args) {
         try {
+            this.config = {};
             const configPath = path.resolve(process.cwd(), CONFIG_FILE);
             if (fs.existsSync(configPath)) {
                 const config = yaml.safeLoad(fs.readFileSync(configPath), 'utf8');
-                this.config = { ...config, ...args };
+                this.config = { ...config };
             }
+            this.config = { ...this.config, ...args };
         }
         catch (e) {
             this.config = {};
-            log.error(e.message);
             log.billboardWarning('There was an error loading your configuration, using defaults.')
+            log.error(e.message);
         }
     }
     branch() {
