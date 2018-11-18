@@ -1,6 +1,7 @@
 const fetch = require('node-fetch');
 const { Headers } = require('node-fetch');
 const Git = require('../providers/git.provider');
+const log = require('../utils/logger');
 const { GITLAB_TOKEN, GITLAB_URL } = require('../utils/constants');
 
 class GitLab {
@@ -20,13 +21,12 @@ class GitLab {
         path = path.replace(':id', id);
         return await fetch(`${this.baseURL}${path}`, { ...options, headers: this.headers });
     }
-
-    async createTag(tag_name, ref, message = '') {
+    
+    async createTag(tag_name, ref) {
         try {
             const body = JSON.stringify({
                 ref,
                 tag_name,
-                message,                
                 email: 'semantix@github.com',
                 type: 'commit'
             });
@@ -35,12 +35,30 @@ class GitLab {
                 body
             });
             if (response.ok) {
-                return await this.createReference(`refs/tags/${tag_name}`, ref);
+                console.log(`💎 Successfully created tag ${tag_name}`);
             }
+            return true;
         }
         catch (e) {
             throw new Error('There was a problem creating the release tag.');
         }
+    }
+    
+    async createRelease(branch, tag_name, description) {
+        console.log('🚀 Creating Release');
+        log.print('Tag Name', tag_name);
+        log.print('Branch', branch);
+        const body = JSON.stringify({
+            description
+        });
+        const response = await this.fetch(`/projects/:id/repository/tags/${tag_name}/release`, {
+            method: 'POST',
+            body
+        });
+        if (response.ok) {            
+            console.log(`🌠 Successfully created release ${tag_name}!`);
+        }
+        return true;
     }
 }
 

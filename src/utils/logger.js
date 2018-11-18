@@ -2,6 +2,9 @@ const chalk = require('chalk');
 const boxen = require('boxen');
 
 class Logger {
+    print(key, msg, color = 'blue') {
+        console.log(`${chalk[color](key)}: ${msg}`);
+    }
     error(output) {
         const logOutput = output => console.log(`${logSymbols.error} ${output}`);
         console.log(`${chalk.bgBlue.white(' semantix ')}${chalk.bgRed(' ERROR ')}  `);

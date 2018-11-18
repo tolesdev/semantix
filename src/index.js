@@ -17,21 +17,31 @@ const run = async () => {
             yargs
                 .scriptName('semantix')
                 .command(['current', 'latest'],'Generate the latest version', {}, async () => {
-                    console.log((await Version.current()).version);                    
+                    try {
+                        console.log((await Version.current()).version);
+                    }
+                    catch(error) {
+                        log.billboardError(error);
+                    }
                 })
                 .command('next','Generate the next version', {}, async args => {
                     const config = new Configuration(args);
-                    console.log(await Version.next(config.mapping()));
+                    try {
+                        console.log(await Version.next(config.mapping()));
+                    }
+                    catch(error) {                        
+                        log.billboardError(error);
+                    }
                 })
                 .command('release', 'Create a release', {}, async args => {
                     const config = new Configuration(args);
                     try {
-                        if (await verifyRelease(config.branch())) {
+                        if (await verifyRelease(config.branch(), (await Version.current()).version, await Version.next(config.mapping()))) {
                             await createRelease(config.branch(), config.mapping());
                         }
                     }
                     catch (error) {
-                        log.billboardError(error.message);
+                        log.billboardError(error);
                     }
                 })
                 .command('update', 'Update package.json with the next version', {}, async args => {
@@ -42,11 +52,16 @@ const run = async () => {
                     catch (e) {
                         log.billboardError("Unable to locate package.json in the current directory.");
                     }
-                    const config = new Configuration(args);
-                    const nextVersion = await Version.next(config.mapping());
-                    consumerPkg.version = nextVersion;
-                    fs.writeFileSync(packagePath, JSON.stringify(consumerPkg, null, 4));
-                    console.log(`🚀  Successfully update package to version ${nextVersion}`);
+                    try {
+                        const config = new Configuration(args);
+                        const nextVersion = await Version.next(config.mapping());
+                        consumerPkg.version = nextVersion;
+                        fs.writeFileSync(packagePath, JSON.stringify(consumerPkg, null, 4));
+                        console.log(`🚀  Successfully updated package to version ${nextVersion}`);
+                    }
+                    catch (error) {
+                        log.billboardError(error);
+                    }
                 })
                 .option('branch', {
                     type: 'string'
@@ -56,7 +71,7 @@ const run = async () => {
         }
     }
     catch (error) {
-        log.billboardError(error.message);
+        log.billboardError(error);
     }
 };
 
