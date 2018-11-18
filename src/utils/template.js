@@ -25,11 +25,11 @@ class TemplateBuilder {
         this.subSections = [];
         this.openingSection = true;
     }
-    Build(title) {
+    Build() {
         if (this.subSections.length) {
             this.composedSections.push(this.sectionTemplate(this.header, this.subSections));
         }
-        return this.baseTemplate(title, this.composedSections);
+        return this.baseTemplate(this.composedSections);
     }
     Section(header) {
         if (!this.openingSection) {
