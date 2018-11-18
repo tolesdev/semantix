@@ -26,8 +26,7 @@ class GitLab {
             const body = JSON.stringify({
                 ref,
                 tag_name,
-                message,
-                
+                message,                
                 email: 'semantix@github.com',
                 type: 'commit'
             });
@@ -36,7 +35,7 @@ class GitLab {
                 body
             });
             if (response.ok) {
-                return await this.createReference(`refs/tags/${tag}`, sha);
+                return await this.createReference(`refs/tags/${tag_name}`, ref);
             }
         }
         catch (e) {

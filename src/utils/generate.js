@@ -63,7 +63,7 @@ class Generate {
             });
         });
 
-        return templateBuilder.Build('Release Notes');
+        return templateBuilder.Build();
     }
 }
 
