@@ -2,12 +2,12 @@ const yaml = require('js-yaml');
 const path = require('path');
 const fs = require('fs');
 const log = require('../utils/logger');
-const { DEFAULTS } = require('../utils/constants');
+const { DEFAULTS, CONFIG_FILE } = require('../utils/constants');
 
 class Configuration {
     constructor(args) {
         try {
-            const configPath = path.resolve(process.cwd(), 'semantix.yml');
+            const configPath = path.resolve(process.cwd(), CONFIG_FILE);
             if (fs.existsSync(configPath)) {
                 const config = yaml.safeLoad(fs.readFileSync(configPath), 'utf8');
                 this.config = { ...config, ...args };
