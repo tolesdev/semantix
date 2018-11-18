@@ -1,16 +1,16 @@
 const execa = require('execa');
 const verifyGitProvider = require('../verify.git.provider');
 const { GITLAB_TOKEN, GITHUB_TOKEN } = require('../utils/constants');
-
 /**
  * Provides git repository information by executing git commands.
  * @class
  */
-class Git {
+class GitProvider {
     /**
      * Get name and commit sha from the current branch.
      * @static
      * @async
+     * @throws Throws if unable to retrieve current branch info
      * @returns {object} branch - { name, sha }
      */
     static async branch() {
@@ -28,16 +28,14 @@ class Git {
      * Gets the configured remote repository.
      * @static
      * @async
-     * @returns {string} remote - Repository URL
+     * @returns {string} remote - Repository URL, with token injected if private repo
+     * 
      */
     static async remote() {
-        let origin = null;
-        try {
-            origin = await execa.stdout('git', [ 'config', '--get', 'remote.origin.url' ]);
-        }
-        catch {
-            // There is no remote repository
-            return null;
+        const origin = await this.remote_raw();
+        if (!origin) return null;
+        if (/^git@.+/.test(origin)) {
+            throw new Error("Semantix currently only supports the use of HTTP/HTTPS")
         }
         // No tokens were present, assume the repository is public and return remote
         if (!GITLAB_TOKEN && !GITHUB_TOKEN) {
@@ -54,9 +52,26 @@ class Git {
     }
 
     /**
+     * Gets the configured remote repository.
+     * @static
+     * @async
+     * @returns {string} remote_raw - Repository URL
+     */
+    static async remote_raw() {
+        try {
+            return await execa.stdout('git', [ 'config', '--get', 'remote.origin.url' ]);
+        }
+        catch {
+            // There is no remote repository
+            return null;
+        }
+    }
+
+    /**
      * Gets a list of tag references for the current repository.
      * @static
      * @async
+     * @throws Throws if unable to retrieve tags
      * @returns {string} A string of newline delimited tag references
      */
     static async tags() {
@@ -69,10 +84,10 @@ class Git {
             if (!remote) {
                 return await execa.stdout('git', [ 'tag' ]);
             }
-            return await execa.stdout('git', [ 'ls-remote', '--tags', remote ]);
+            return await execa.stdout('git', [ 'ls-remote', '--quiet', '--tags', remote ]);
         }
         catch (e) {
-            throw new Error(`There was an error trying to retrieve git tags${remote ? ` from ${remote}` : ''}.`);
+            throw new Error(`There was an error trying to retrieve git tags${remote ? ` from ${await this.remote_raw()}` : ''}`);
         }
     }
 
@@ -80,6 +95,7 @@ class Git {
      * Get the commit log for the current repository.
      * @static
      * @async
+     * @throws Throws is unable to retrieve git logs
      * @returns {string} log - A string of newline delimited commit messages
      */
     static async log() {
@@ -87,7 +103,7 @@ class Git {
             return await execa.stdout('git', [ 'log', '--pretty=oneline', '--first-parent', '--no-merges', '--reverse' ]);
         }
         catch (e) {
-            throw new Error('There was a problem trying to retrieve the commit logs.');
+            throw new Error('There was a problem trying to retrieve the commit logs');
         }
     }
 
@@ -126,6 +142,7 @@ class Git {
      * Returns the SHA of the commit pointed to by HEAD.
      * @static
      * @async
+     * @throws Throws if unable to retrieve HEAD
      * @returns {string} sha - SHA of the commit where HEAD is pointed
      */
     static async headSha() {
@@ -133,7 +150,7 @@ class Git {
             return await execa.stdout('git', [ 'rev-parse', 'HEAD' ]);
         }
         catch (e) {
-            throw new Error('There was a problem trying to retrieve the SHA of HEAD.');
+            throw new Error('There was a problem trying to retrieve the SHA of HEAD');
         }
     }
 
@@ -141,6 +158,7 @@ class Git {
      * Returns the SHA of the head of the local branch.
      * @static
      * @async
+     * @throws Throws if unable to retrieve HEAD of the local branch
      * @param {string} branchName - The branch to consider
      * @returns {string} sha - SHA of the head of the local branch
      */
@@ -149,9 +167,9 @@ class Git {
             return await execa.stdout('git', [ 'rev-parse', branchName ]);
         }
         catch (e) {
-            throw new Error(`There was a problem trying to retrieve the HEAD of ${branchName}.`);
+            throw new Error(`There was a problem trying to retrieve the HEAD of ${branchName}`);
         }        
     }
 }
 
-module.exports = Git;
+module.exports = GitProvider;

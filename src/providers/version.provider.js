@@ -3,7 +3,7 @@ const Parser = require('../utils/parser');
 const semver = require('semver');
 const { MAJOR, MINOR, PATCH } = require('../utils/constants');
 
-class Version {
+class VersionProvider {
     /**
      * Get the current version of this repository.
      * @static
@@ -69,4 +69,4 @@ class Version {
     }
 }
 
-module.exports = Version;
+module.exports = VersionProvider;

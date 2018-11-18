@@ -1,6 +1,7 @@
 const fetch = require('node-fetch');
 const { Headers } = require('node-fetch');
 const Git = require('../providers/git.provider');
+const log = require('../utils/logger');
 const { GITHUB_TOKEN, GITHUB_URL } = require('../utils/constants');
 
 class GitHub {
@@ -30,10 +31,13 @@ class GitHub {
                 email: 'semantix@github.com',
                 type: 'commit'
             });
-            await this.fetch('/repos/:owner/:repo/git/tags', {
+            const response = await this.fetch('/repos/:owner/:repo/git/tags', {
                 method: 'POST',
                 body
             });
+            if (response.ok) {
+                console.log(`💎 Successfully created tag ${tag}`);
+            }
             return true;
         }
         catch (e) {
@@ -41,38 +45,33 @@ class GitHub {
         }
     }
 
-    async createReference(ref, sha) {
-        try {
-            const body = JSON.stringify({ ref, sha });
-            await this.fetch('/repos/:owner/:repo/git/refs', {
-                method: 'POST',
-                body
-            });
-            return true;
+    async createRelease(target_commitish, tag_name, _body) {
+        console.log('🚀 Creating Release');
+        log.print('Tag Name', tag_name);
+        log.print('Branch', target_commitish);
+        const body = JSON.stringify({
+            tag_name,
+            name: `Release ${tag_name}`,
+            target_commitish,
+            body: _body
+        });
+        const response = await this.fetch('/repos/:owner/:repo/releases', {
+            method: 'POST',
+            body
+        });
+        const responseBody = await response.json();
+        if (responseBody.message.includes('Bad credentials')) {
+            throw new Error('Bad credentials, check that your token is set.');
         }
-        catch (e) {
-            throw new Error('There was a problem creating the tag reference.');
+        if (responseBody.message.includes('Validation Failed')) {
+            if (responseBody.errors.find(e => e.code === 'already_exists')) {
+                throw new Error(`Release ${tag_name} already exists.`);
+            }
         }
-    }
-
-    async createRelease(target_commitish, tag_name, body) {
-        try {
-            const _body = JSON.stringify({
-                tag_name,
-                name: `Release ${tag_name}`,
-                target_commitish,
-                body
-            });
-            const response = await this.fetch('/repos/:owner/:repo/releases', {
-                method: 'POST',
-                body: _body
-            });
-            if (!response.ok) throw new Error('There was a problem creating the release.');
-            return true;
+        if (response.ok) {            
+            console.log(`🌠 Successfully created release ${tag_name}!`);
         }
-        catch (e) {
-            throw new Error('There was a problem creating the release.');
-        }
+        return true;
     }
 }
 
