@@ -17,17 +17,18 @@ module.exports = async (releaseBranch, releaseMapping) => {
     const releaseNotes = await Generate.releaseNotes(releaseMapping, parsed);
 
     if (await verifyGitProvider()) {
+        const tag = `v${next}`;
         if (GITHUB_TOKEN) {
             const git = new GitHub();
-            await git.createTag(`v${next}`, await Git.headSha(), releaseNotes);
+            await git.createTag(tag, await Git.headSha());
             console.log(`💎 Successfully created tag ${tag}.`);
-            await git.createRelease(releaseBranch, `v${next}`, releaseNotes);
-            console.log(`🌠 Successfully created release v${next}!`);
+            await git.createRelease(releaseBranch, tag, releaseNotes);
+            console.log(`🌠 Successfully created release ${tag}!`);
         }
         if (GITLAB_TOKEN) {
             const git = new GitLab();
-            await git.createTag(`v${next}`, await Git.headSha(), releaseNotes);
-            console.log(`🌠 Successfully created release v${next}!`);
+            await git.createTag(tag, await Git.headSha(), releaseNotes);
+            console.log(`🌠 Successfully created release ${tag}!`);
         }
     }
 };

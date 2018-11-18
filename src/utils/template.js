@@ -1,8 +1,4 @@
-const BaseTemplate = (header, children) => (
-`# ${header}
-
-${children.map(child => `${child}`).join('')}`
-);
+const BaseTemplate = children => children.map(child => `${child}`).join('');
 
 const SectionTemplate = (header, children) => (
 `## ${header}

@@ -22,11 +22,10 @@ class GitHub {
         return await fetch(`${this.baseURL}${path}`, { ...options, headers: this.headers });
     }
 
-    async createTag(tag, object, message = '') {
+    async createTag(tag, object) {
         try {
             const body = JSON.stringify({
                 tag,
-                message,
                 object,
                 email: 'semantix@github.com',
                 type: 'commit'
@@ -66,7 +65,7 @@ class GitHub {
             });
             const response = await this.fetch('/repos/:owner/:repo/releases', {
                 method: 'POST',
-                _body
+                body: _body
             });
             if (!response.ok) throw new Error('There was a problem creating the release.');
             return true;

@@ -42,7 +42,8 @@ keyword(scope): This is my commit message!
 *Example*
 ```json
 "scripts": {
-    "update": "semantix update" 
+    "update": "semantix update",
+    "release": "semantix release"
 }
 ```
 ## Command Line
@@ -56,6 +57,7 @@ npx semantix <command> [option]
 |`latest`|Returns the version of the latest release.|
 |`next`|Returns the next release version.|
 |`update`|Updates the package.json with the next release version.|
+|`release`|Creates a tag and release on your remote repository.|
 
 ### Options
 |Option|Description|
