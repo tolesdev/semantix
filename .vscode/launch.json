@@ -10,9 +10,16 @@
             "name": "Launch Program",
             "program": "${workspaceFolder}\\src\\index.js",
             "args": [
-                "release",
-                "--branch=feat/generate-release"
+                "next"
             ]
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Tests",
+            "program": "${workspaceFolder}/node_modules/jest/bin/jest.js",
+            "cwd": "${workspaceFolder}/tests",
+            "args": []
         }
     ]
 }

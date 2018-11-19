@@ -1,6 +1,6 @@
 {
     "name": "semantix",
-    "version": "0.9.0",
+    "version": "0.9.3",
     "main": "./src/index.js",
     "author": "btoles <brennan.toles@gmail.com>",
     "engines": {
@@ -10,7 +10,8 @@
         "current": "node src/index.js current",
         "next": "node src/index.js next",
         "update": "node src/index.js update",
-        "release": "node src/index.js release"
+        "release": "node src/index.js release",
+        "test": "jest"
     },
     "bin": {
         "semantix": "./src/index.js"
@@ -20,6 +21,9 @@
         "url": "https://github.com/btoles/semantix.git"
     },
     "license": "MIT",
+    "jest": {
+        "verbose": true
+    },
     "dependencies": {
         "boxen": "^2.0.0",
         "chalk": "^2.4.1",
@@ -30,5 +34,8 @@
         "js-yaml": "^3.12.0",
         "node-fetch": "^2.3.0",
         "yargs": "^12.0.2"
+    },
+    "devDependencies": {
+        "jest": "^23.6.0"
     }
 }

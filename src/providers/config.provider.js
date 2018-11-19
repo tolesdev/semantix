@@ -5,10 +5,9 @@ const log = require('../utils/logger');
 const { DEFAULTS, CONFIG_FILE } = require('../utils/constants');
 
 class Configuration {
-    constructor(args) {
+    constructor(args = {}, configPath = path.resolve(process.cwd(), CONFIG_FILE)) {
         try {
             this.config = {};
-            const configPath = path.resolve(process.cwd(), CONFIG_FILE);
             if (fs.existsSync(configPath)) {
                 const config = yaml.safeLoad(fs.readFileSync(configPath), 'utf8');
                 this.config = { ...config };
