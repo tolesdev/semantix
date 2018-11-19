@@ -11,12 +11,12 @@
 - [🌈 Order of Precedence](#order-of-precedence)
 - [📂 Configuration](#configuration)
 # 📈 Progress
+- [ ] Generate CHANGELOG.md
 - [x] Generate current and latest version
 - [x] Update *package.json* with latest version
 - [x] Private repository support
-- [ ] Generate CHANGELOG.md
 - [x] Tag release branch with release versions
-    - [ ] GitLab
+    - [x] GitLab
     - [x] GitHub
     - [x] Release Notes
 
@@ -26,10 +26,13 @@ npm install --save semantix
 ```
 📃[Back to Table of Content](#table-of-content)
 # Usage
+Semantix keeps track of your projects version number and generates release notes/changelogs automatically.  All that needs to be done to leverage Semantix is to format your commits in a specific way.
 ## Commit Format
 `keyword`: A predefined string indicating how much to bump the project version.
 
 `scope`: An ***optional*** argument specifying the scope of the commit -- used in the release process to annotate release tags and generate changelogs.
+
+Mapping specific `keyword` to release types (major, minor, patch) can be customized and defined in a `.semantix.yml` configuration file.
 
 ```
 keyword: 🍔🥓🍟
@@ -42,6 +45,8 @@ keyword(scope): This is my commit message!
 *Example*
 ```json
 "scripts": {
+    "latest": "semantix latest",
+    "next": "semantix next",
     "update": "semantix update",
     "release": "semantix release"
 }
@@ -52,12 +57,34 @@ npx semantix <command> [option]
 ```
 
 ### Commands
-|Command|Description|
-|:----:|:-----|
-|`latest`|Returns the version of the latest release.|
-|`next`|Returns the next release version.|
-|`update`|Updates the package.json with the next release version.|
-|`release`|Creates a tag and release on your remote repository.|
+
+### latest
+Checks repository tags to determine and displays the latest release version.
+
+---
+### next
+Checks repository tags to determine the latest version, then calculates and displays the next release version based off of the commit history after the last release.
+
+---
+### update
+Update your package.json with the projects next version.
+
+---
+### release
+> In order to use this feature you must provide a set of environment variables for *semantix* to use.
+> 
+Creates a tag and release in your **GitLab** or **GitHub** remote repository.
+
+### **Requirements**: 
+### 😸 GitHub
+* Access Token: `GITHUB_TOKEN` or `GH_TOKEN`
+
+* GitHub API URL: `GITHUB_URL`
+
+### 🦊 GitLab
+* Access Token: `GITLAB_TOKEN` or `GL_TOKEN`
+
+* GitLab API URL: `GITLAB_URL`
 
 ### Options
 |Option|Description|
@@ -73,8 +100,8 @@ It is recommended to use `.semantix.yml` for all your configuration and only use
 
 
 # Configuration
-> *You may store your configuration and override some defaults in a `.semantix.yml` file*
-## *.semantix.yml*
+> You may store your configuration and override some defaults in a .semantix.yml file
+## *`.semantix.yml`*
 ```yml
 branch: master
 release:
