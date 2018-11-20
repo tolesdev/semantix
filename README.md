@@ -100,7 +100,7 @@ It is recommended to use `.semantix.yml` for all your configuration and only use
 
 
 # Configuration
-> You may store your configuration and override some defaults in a .semantix.yml file
+> You may store your configuration and override some defaults in a `.semantix.yml` file
 ## *`.semantix.yml`*
 ```yml
 branch: master

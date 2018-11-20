@@ -1,5 +1,5 @@
 stages:
-  - test
+  # - test
   - latest
   - next
   - name: release
@@ -14,11 +14,11 @@ node_js:
 
 jobs:
   include:
-    - stage: test
-      on:
-        tags: false
-      cache: npm
-      script: npm run test
+    # - stage: test
+    #   on:
+    #     tags: false
+    #   cache: npm
+    #   script: npm run test
     - stage: latest
       on:
         tags: false

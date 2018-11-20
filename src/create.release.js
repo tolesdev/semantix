@@ -1,29 +1,24 @@
-const Git = require('./providers/git.provider');
 const GitHub = require('./services/github.service');
 const GitLab = require('./services/gitlab.service');
 const Parser = require('./utils/parser');
 const Generate = require('./utils/generate');
-const Version = require('./providers/version.provider');
-const { GITHUB_TOKEN, GITLAB_TOKEN } = require('./utils/constants');
+const { GITHUB, GITLAB } = require('./utils/constants');
 
-module.exports = async (releaseBranch, releaseMapping) => {
-    const commits = await Git.commits();
-    const next = await Version.next(releaseMapping);
-    const current = await Version.current();
+module.exports = async ({config, branchName, commits, mapping, headSHA, nextVersion, current, gitProvider, owner, repositoryName}) => {
     // Drop commits that don't match our keyword mapping before generating notes
-    const keywordFilter = commit => releaseMapping[commit.keyword] !== undefined;
+    const keywordFilter = commit => mapping[commit.keyword] !== undefined;
     const parsed = (await Parser.commits(commits, current.sha)).filter(keywordFilter);
-    const releaseNotes = await Generate.releaseNotes(releaseMapping, parsed);
-    const tag = `v${next}`;
+    const releaseNotes = await Generate.releaseNotes(mapping, parsed);
+    const tag = `v${nextVersion}`;
 
-    if (GITHUB_TOKEN) {
-        const git = new GitHub();
-        await git.createTag(tag, await Git.headSha());
-        await git.createRelease(releaseBranch, tag, releaseNotes);
+    if (gitProvider === GITHUB) {
+        const git = new GitHub({ config, owner, repositoryName });
+        await git.createTag(tag, headSHA);
+        await git.createRelease(branchName, tag, releaseNotes);
     }
-    if (GITLAB_TOKEN) {
-        const git = new GitLab();
-        await git.createTag(tag, await Git.headSha());
-        await git.createRelease(releaseBranch, tag, releaseNotes);
+    if (gitProvider === GITLAB) {
+        const git = new GitLab({ config, owner, repositoryName });
+        await git.createTag(tag, headSHA);
+        await git.createRelease(branchName, tag, releaseNotes);
     }
 };

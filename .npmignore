@@ -1,0 +1,5 @@
+.semantix.yml
+.travis.yml
+Dockerfile
+tests
+.vscode 

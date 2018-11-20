@@ -1,33 +1,42 @@
 const chalk = require('chalk');
 const boxen = require('boxen');
+const { IS_DEVELOPMENT } = require('./constants');
 
 class Logger {
+    constructor(verbose) {
+        this.debugLog = verbose || IS_DEVELOPMENT;
+    }
     print(key, msg, color = 'blue') {
         console.log(`${chalk[color](key)}: ${msg}`);
     }
     error(output) {
-        const logOutput = output => console.log(`${logSymbols.error} ${output}`);
-        console.log(`${chalk.bgBlue.white(' semantix ')}${chalk.bgRed(' ERROR ')}  `);
+        const log = output => {
+            return this.debugLog 
+                    ? console.log(`semantix(Error): ${output}`)
+                    : null;
+        }
         if (typeof output === 'string') {
-            logOutput(output)
+            log(output)
         }
         else if (typeof output === 'object') {
-            logOutput(JSON.stringify(output));
+            log(JSON.stringify(output));
         }
         else {
-            output.forEach(logOutput);
+            output.forEach(log);
         }
-        this.debug([`typeof output = ${typeof output}`]);
     }
 
-    debug(output) {
-        const logOutput = output => console.log(`${logSymbols.warning} ${output}`);
-        console.log(`${chalk.bgBlue.white(' semantix ')}${chalk.bgYellow.black(' DEBUG ')}  `);
+    debug(scope, output) {
+        const log = output => {
+            return this.debugLog 
+                    ? console.log(`semantix${scope ? `(${scope})` : ''}: ${output}`)
+                    : null;
+        }
         if (typeof output === 'string') {
-            logOutput(output)
+            log(output)
         }
         else {
-            output.forEach(logOutput);
+            output.forEach(log);
         }
     }
 
@@ -62,4 +71,4 @@ class Logger {
     }
 }
 
-module.exports = new Logger();
+module.exports = Logger;

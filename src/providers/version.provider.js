@@ -1,19 +1,26 @@
 const Git = require('./git.provider');
 const Parser = require('../utils/parser');
+const Logger = require('../utils/logger');
 const semver = require('semver');
 const { MAJOR, MINOR, PATCH } = require('../utils/constants');
 
+/** Provides version information based off commit history. */
 class VersionProvider {
+    /** Creates a VersionProvider. */
+    constructor(configuration) {
+        this.config = configuration;
+        this.log = new Logger(this.config.verbose());
+    }
     /**
      * Get the current version of this repository.
-     * @static
      * @async
+     * @param {string} - Remote repository URL
+     * @param {string} - String of newline delimited tag references
      * @returns {object} version - { sha, version }
      */
-    static async current() {
-        const remote = await Git.remote();
-        const tags = await Git.tags();
+    async current({remote, tags}) {
         if (!tags) {
+            this.log.debug('VersionProvider', 'No tags found, starting at v0.0.0');
             return { sha: null, version: '0.0.0' };
         }
         try {
@@ -54,13 +61,13 @@ class VersionProvider {
      * @param {object} mapping - Definition for the keyword mapping
      * @returns {string} version - The next version for the project X.X.X
      */
-    static async next(mapping) {
-        const current = await this.current();
+    async next({remote, tags, commits, mapping}) {
+        const current = await this.current({remote, tags});
         const release = new Map(Object.entries(mapping));
-        const commits = await Parser.commits(await Git.commits(), current.sha);
-
+        const parsedCommits = await Parser.commits(commits, current.sha);
+        if (!parsedCommits) return current.version;
         // Increment the version based on the commits after the last tagged version
-        return commits.reduce((latest, commit) => {
+        return parsedCommits.reduce((latest, commit) => {
             if ([MAJOR, MINOR, PATCH].includes(release.get(commit.keyword))) {
                 return semver.inc(latest, release.get(commit.keyword));
             }
