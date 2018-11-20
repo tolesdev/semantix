@@ -1,10 +1,7 @@
 const { MAJOR, MINOR, PATCH } = require('./constants');
 const NO_SCOPE = 'none';
 const TemplateBuilder = require('../utils/template');
-/**
- * Generator class.
- * @class
- */
+/** Generator class. */
 class Generate {
     /**
      * Generates release notes from commit objects.

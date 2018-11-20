@@ -6,12 +6,16 @@ module.exports = {
     MAJOR,
     MINOR,
     PATCH,
+    GITLAB: 'gitlab',
+    GITHUB: 'github',
     CONFIG_FILE: '.semantix.yml',
     DEFAULTS: {
         RELEASE: {
             BREAKING: MAJOR,
             feat: MINOR,
             perf: MINOR,
+            refactor: MINOR,
+            ci: PATCH,
             init: PATCH,
             chore: PATCH,
             fix: PATCH,
@@ -21,9 +25,5 @@ module.exports = {
         BRANCH: 'master'
     },
     // Environment Variables
-    IS_DEVELOPMENT: process.env.NODE_ENV === 'development',
-    GITHUB_TOKEN: process.env.GH_TOKEN || process.env.GITHUB_TOKEN,
-    GITLAB_TOKEN: process.env.GL_TOKEN || process.env.GITLAB_TOKEN,
-    GITHUB_URL: process.env.GH_URL || process.env.GITHUB_URL,
-    GITLAB_URL: process.env.GL_URL || process.env.GITLAB_URL
+    IS_DEVELOPMENT: process.env.NODE_ENV === 'development'
 };
