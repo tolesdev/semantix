@@ -52,6 +52,8 @@ class GitLab {
                 method: 'POST',
                 body
             });
+            this.log.debug(`${response.status} ${response.statusText}`);
+            this.log.debug(await response.text());
             if (response.ok) {
                 console.log(`💎 Successfully created tag ${tag_name}`);
             }
@@ -81,6 +83,8 @@ class GitLab {
             method: 'POST',
             body
         });
+        this.log.debug(`${response.status} ${response.statusText}`);
+        this.log.debug(await response.text());
         if (response.ok) {            
             console.log(`🌠 Successfully created release ${tag_name}!`);
         }
