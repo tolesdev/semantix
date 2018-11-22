@@ -2,7 +2,6 @@ const yaml = require('js-yaml');
 const path = require('path');
 const fs = require('fs');
 const Logger = require('../utils/logger');
-const Verify = require('../utils/verify');
 const { DEFAULTS, CONFIG_FILE, GITLAB, GITHUB } = require('../utils/constants');
 const dotenvExpand = require('dotenv-expand');
 dotenvExpand(require('dotenv').config());
@@ -50,6 +49,10 @@ class Configuration {
     mapping() {
         return this.config.release || DEFAULTS.RELEASE;
     }
+    /**
+     * Gets the value of the CLI verbose option.
+     * @returns {boolean} - true if verbose logging enabled
+     */
     verbose() {
         return this.config.verbose;
     }

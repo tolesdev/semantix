@@ -32,6 +32,7 @@ class GitHub {
     async fetch(path, options) {
         path = path.replace(':owner', this.owner);
         path = path.replace(':repo', this.repositoryName);
+        this.log.debug(`${options.method} ${this.baseURL}${path}`);
         return await fetch(`${this.baseURL}${path}`, { ...options, headers: this.headers });
     }
 
@@ -53,6 +54,8 @@ class GitHub {
                 method: 'POST',
                 body
             });
+            this.log.debug(`${response.status} ${response.statusText}`);
+            this.log.debug(await response.text());
             if (response.ok) {
                 console.log(`💎 Successfully created tag ${tag}`);
             }
@@ -84,6 +87,8 @@ class GitHub {
             method: 'POST',
             body: _body
         });
+        this.log.debug(`${response.status} ${response.statusText}`);
+        this.log.debug(await response.text());
         const responseBody = await response.json();
         if (responseBody.message && responseBody.message.includes('Bad credentials')) {
             throw new Error('Bad credentials, check that your token is set.');

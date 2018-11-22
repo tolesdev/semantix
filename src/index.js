@@ -9,7 +9,6 @@ const Configuration = require('./providers/config.provider');
 const Git = require('./providers/git.provider');
 const Verify = require('./utils/verify');
 const Version = require('./providers/version.provider');
-const verifyRelease = require('../src/verify.release');
 const packagePath = path.resolve(process.cwd(), 'package.json');
 
 const verifyGeneral = async verify => {
