@@ -31,6 +31,7 @@ class GitLab {
     async fetch(path, options) {
         const id = encodeURIComponent(`${this.owner}/${this.repositoryName}`);
         path = path.replace(':id', id);
+        this.log.debug('GitLabService', `${options.method} ${this.baseURL}${path}`);
         return await fetch(`${this.baseURL}${path}`, { ...options, headers: this.headers });
     }
     
@@ -52,8 +53,8 @@ class GitLab {
                 method: 'POST',
                 body
             });
-            this.log.debug(`${response.status} ${response.statusText}`);
-            this.log.debug(await response.text());
+            this.log.debug('GitLabService', `${response.status} ${response.statusText}`);
+            this.log.debug('GitLabService', await response.text());
             if (response.ok) {
                 console.log(`💎 Successfully created tag ${tag_name}`);
             }
@@ -83,8 +84,8 @@ class GitLab {
             method: 'POST',
             body
         });
-        this.log.debug(`${response.status} ${response.statusText}`);
-        this.log.debug(await response.text());
+        this.log.debug('GitLabService', `${response.status} ${response.statusText}`);
+        this.log.debug('GitLabService', await response.text());
         if (response.ok) {            
             console.log(`🌠 Successfully created release ${tag_name}!`);
         }

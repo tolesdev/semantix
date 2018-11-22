@@ -1,16 +1,16 @@
 {
     "name": "semantix",
-    "version": "0.10.2",
+    "version": "0.10.3",
     "main": "./src/index.js",
     "author": "btoles <brennan.toles@gmail.com>",
     "engines": {
         "node": ">=7.6.0"
     },
     "scripts": {
-        "current": "node src/index.js current",
-        "next": "node src/index.js next",
-        "update": "node src/index.js update",
-        "release": "node src/index.js release",
+        "current": "node src/index.js current --verbose",
+        "next": "node src/index.js next --verbose",
+        "update": "node src/index.js update --verbose",
+        "release": "node src/index.js release --verbose",
         "docs": "jsdoc --verbose --configure .jsdoc.json",
         "test": "jest"
     },
