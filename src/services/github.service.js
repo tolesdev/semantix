@@ -87,9 +87,9 @@ class GitHub {
             method: 'POST',
             body: _body
         });
-        this.log.debug('GitHubService', `${response.status} ${response.statusText}`);
-        this.log.debug('GitHubService', await response.text());
         const responseBody = await response.json();
+        this.log.debug('GitHubService', `${response.status} ${response.statusText}`);
+        this.log.debug('GitHubService', responseBody);
         if (responseBody.message && responseBody.message.includes('Bad credentials')) {
             throw new Error('Bad credentials, check that your token is set.');
         }
