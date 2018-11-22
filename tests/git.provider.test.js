@@ -1,43 +1,54 @@
 const GitProvider = require('../src/providers/git.provider');
 const Configuration = require('../src/providers/config.provider');
-const test = jest.fn(() => null);
-jest.mock('../src/providers/config.provider', () => {
-  return jest.fn().mockImplementation(() => {
-    return {
-        accessToken: test
-    };
-  });
-});
 
 describe('GitProvider', () => {
-    describe('remote', () => {
-        const config = new Configuration();
-        const Git = new GitProvider(config);
+    beforeEach(() => {
+        jest.resetModules();
+    });
+    describe('remote.origin.url', () => {
+        describe('SSH', () => {
+            const GITHUB_TOKEN = 'TOKEN!@#';
+            const config = new Configuration();
+            config.accessToken = () => GITHUB_TOKEN;
+            const git = new GitProvider(config);
+            git.remote_raw = async () => 'git@github.com/btoles/semantix.git';
 
-        describe('No Tokens', () => {
-            Git.remote_raw = jest.fn(async () => remote_raw);
-
-            it('should not inject token into remote', async () => {
-                expect(test).toBeCalled();
-                expect(await Git.remote()).toBe(await Git.remote_raw());
+            it('should throw error', () => {
+                git.remote().catch(err => {
+                    expect(err).not.toBeUndefined();
+                });
             });
         });
+        describe('No Token Configured', () => {
+            const config = new Configuration();
+            const git = new GitProvider(config);
+            git.remote_raw = async () => 'remote_raw';
 
-        // describe('Token Present', () => {
-        //     const GITHUB_TOKEN = 'TOKEN!@#';
-        //     const remote_raw = 'https://github.com/btoles/semantix.git';
+            it('should not inject token into remote', async () => {
+                expect(await git.remote()).toBe(await git.remote_raw());
+            });
+        });
+        describe('Token Configured', () => {
+            const GITHUB_TOKEN = 'TOKEN!@#';
+            const config = new Configuration();
+            config.accessToken = () => GITHUB_TOKEN;
+            const git = new GitProvider(config);
+            git.remote_raw = async () => 'https://github.com/btoles/semantix.git';
 
-        //     const Configuration = require('../src/providers/config.provider');
-        //     const Verify = require('../src/utils/verify');
-        //     const Git = require('../src/providers/git.provider');
-        //     Configuration.prototype.accessToken = () => GITHUB_TOKEN;
-        //     Verify.accessToken = () => true;
-        //     Git.remote_raw = async () => remote_raw;
+            it('should inject token into remote', async () => {
+                expect(await git.remote()).toContain(GITHUB_TOKEN);
+            });
+        });
+        describe('Remote Url Has A Token', () => {
+            const GITHUB_TOKEN = 'TOKEN!@#';
+            const config = new Configuration();
+            config.accessToken = () => GITHUB_TOKEN;
+            const git = new GitProvider(config);
+            git.remote_raw = async () => 'https://oauth2:asdkf932f29fj@github.com/btoles/semantix.git';
 
-        //     it('should inject token into remote', async () => {
-        //         expect(await Git.remote()).toContain(GITHUB_TOKEN);
-        //     });
-        // });
-
+            it('should inject user defined token into remote', async () => {
+                expect(await git.remote()).toContain(GITHUB_TOKEN);
+            });
+        });
     });
 });
