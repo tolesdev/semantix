@@ -35,6 +35,9 @@ class Logger {
         if (typeof output === 'string') {
             log(output)
         }
+        else if (typeof output === 'object') {
+            log(JSON.stringify(output));
+        }
         else {
             output.forEach(log);
         }
