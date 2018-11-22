@@ -1,5 +1,5 @@
 stages:
-  # - test
+  - test
   - latest
   - next
   - name: release
@@ -14,31 +14,31 @@ node_js:
 
 jobs:
   include:
-    # - stage: test
-    #   on:
-    #     tags: false
-    #   cache: npm
-    #   script: npm run test
+    - stage: test
+      on:
+        tags: false
+      cache: npm
+      script: npm run test
     - stage: latest
       on:
         tags: false
       cache: npm
-      script: node ./src/index.js latest
+      script: npm run current
     - stage: next
       on:
         tags: false
       cache: npm
-      script: node ./src/index.js next
+      script: npm run next
     - stage: release
       on:
         tags: false
       cache: npm
-      script: node ./src/index.js release
+      script: npm run release
     - stage: publish
       on:
         tags: false
       cache: npm
-      script: node ./src/index.js update
+      script: npm run update
       deploy:
         skip_cleanup: true
         provider: npm
