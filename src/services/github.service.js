@@ -91,7 +91,7 @@ class GitHub {
         this.log.debug('GitHubService', `${response.status} ${response.statusText}`);
         this.log.debug('GitHubService', responseBody);
         if (responseBody.message && responseBody.message.includes('Bad credentials')) {
-            throw new Error('Bad credentials, check that your token is set.');
+            throw new Error('Bad credentials, check that your access token has the right permissions.');
         }
         if (responseBody.message && responseBody.message.includes('Validation Failed')) {
             if (responseBody.errors.find(e => e.code === 'already_exists')) {

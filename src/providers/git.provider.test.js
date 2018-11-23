@@ -1,5 +1,5 @@
-const GitProvider = require('../src/providers/git.provider');
-const Configuration = require('../src/providers/config.provider');
+const GitProvider = require('./git.provider');
+const Configuration = require('./config.provider');
 
 describe('GitProvider', () => {
     beforeEach(() => {

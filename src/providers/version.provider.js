@@ -1,4 +1,3 @@
-const Git = require('./git.provider');
 const Parser = require('../utils/parser');
 const Logger = require('../utils/logger');
 const semver = require('semver');
@@ -14,8 +13,8 @@ class VersionProvider {
     /**
      * Get the current version of this repository.
      * @async
-     * @param {string} - Remote repository URL
-     * @param {string} - String of newline delimited tag references
+     * @param {string} remote - Remote repository URL
+     * @param {string} tags - String of newline delimited tag references
      * @returns {object} version - { sha, version }
      */
     async current({remote, tags}) {
@@ -25,7 +24,7 @@ class VersionProvider {
         }
         try {
             const gitRefsVersionTag = /(v\d+\.\d+\.\d+)$/;
-            return tags
+            const current = tags
                 .split('\n')
                 // Filter out refs that are not version tags
                 .filter(ref => gitRefsVersionTag.test(ref))
@@ -50,6 +49,7 @@ class VersionProvider {
                 })
                 // Take the highest version
                 .pop();
+            return current;
         }
         catch (e) {
             throw new Error('There was an error trying to determine the current version.')
@@ -58,12 +58,14 @@ class VersionProvider {
 
     /**
      * Gets the next version.
-     * @param {object} mapping - Definition for the keyword mapping
+     * @param {string} remote - Remote repository URL
+     * @param {string} tags - String of newline delimited tag references
+     * @param {string} commits - String of newline delimited commits
      * @returns {string} version - The next version for the project X.X.X
      */
-    async next({remote, tags, commits, mapping}) {
+    async next({remote, tags, commits }) {
         const current = await this.current({remote, tags});
-        const release = new Map(Object.entries(mapping));
+        const release = new Map(Object.entries(this.config.mapping()));
         const parsedCommits = await Parser.commits(commits, current.sha);
         if (!parsedCommits) return current.version;
         // Increment the version based on the commits after the last tagged version

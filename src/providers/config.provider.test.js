@@ -1,8 +1,8 @@
-const Configuration = require('../src/providers/config.provider');
-const { DEFAULTS, CONFIG_FILE } = require('../src/utils/constants');
+const Configuration = require('./config.provider');
+const { DEFAULTS, CONFIG_FILE } = require('../utils/constants');
 const path = require('path');
 const fs = require('fs');
-const configPath = path.resolve(__dirname, CONFIG_FILE);
+const configPath = path.resolve(__dirname, '../../tests', CONFIG_FILE);
 
 
 describe('Configuration', () => {

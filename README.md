@@ -1,4 +1,4 @@
-# 🌠semantix
+# semantix
 > *Semantix is a tool that analyzes your repository's commit history and generates the appropriate semantic version based off keywords found in the commit messages*
 ### Table of Content
 - [🚀 Installation](#installation)
@@ -59,11 +59,11 @@ npx semantix <command> [option]
 ### Commands
 
 ### latest
-Checks repository tags to determine and displays the latest release version.
+Checks repository tags to determine the latest release version.
 
 ---
 ### next
-Checks repository tags to determine the latest version, then calculates and displays the next release version based off of the commit history after the last release.
+Checks repository tags to determine the latest version and calculates the next release version based off of the commit history after the latest release.
 
 ---
 ### update
@@ -72,19 +72,21 @@ Update your package.json with the projects next version.
 ---
 ### release
 > In order to use this feature you must provide a set of environment variables for *semantix* to use.
-> 
+
 Creates a tag and release in your **GitLab** or **GitHub** remote repository.
 
 ### **Requirements**: 
-### 😸 GitHub
-* Access Token: `GITHUB_TOKEN` or `GH_TOKEN`
+#### 😸 GitHub
+|||
+|:-:|:-:|
+|Access Token| `GITHUB_TOKEN` or `GH_TOKEN`|
+|GitHub API URL| `GITHUB_URL`|
 
-* GitHub API URL: `GITHUB_URL`
-
-### 🦊 GitLab
-* Access Token: `GITLAB_TOKEN` or `GL_TOKEN`
-
-* GitLab API URL: `GITLAB_URL`
+#### 🦊 GitLab
+|||
+|:-:|:-:|
+|Access Token| `GITLAB_TOKEN` or `GL_TOKEN`|
+|GitHub API URL| `GITLAB_URL`|
 
 ### Options
 |Option|Description|

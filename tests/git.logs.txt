@@ -1,0 +1,33 @@
+04b1c6b94f760d8ed630091bd71eefc0731d7224 init: So it begins!
+fc0e994ff8c89e425bc3733aae8929016ad9b85b test: Test commit for analyzing commit history
+f4294391bfb33f8d142fe8414205d0650f03f786 feat(get-version): Analyze git commits for determining project version
+ba8dbf0962209bf58e6780969d2d156102ba4f14 chore(getVersion): Code cleanup
+a717c31e7a33a8b49ad46bd76a24d03925682a51 feat: Verify Git and Node.js requirements
+8bbbe06a3c56444a182a352cce3043b56f4cb37f feat(cli): Added "current" and "next" commands and various cli options
+8c06b0f22551e7f7e42d136723a1e3f3389c4ad8 feat: Verify release branch conditions
+9b658acb8e061aecedfe4303972ec4f1b5c2288f chore: Simplifying get version process and general refactor
+f928f3468192d8a6b43367cfd9174945bc9359fb ci: Travis CI pipeline added, small refactor
+22b87f8df11b6a613b856782596b43403e5572ea docs: README
+9cbeb2835a54e30ef4d5bd30ef5e5507595729a4 docs: Updating installation instructions
+e4c746285455501c52bc22360e7805fa22223709 chore: Changed 'current' command to 'latest' with 'current' as an alias
+46a0984c6df0396c25926cd8365f92f591110655 ci: Testing non-master branch builds
+4d9c25adf1340bd29cdf4f304352a75404032d46 docs: Configuration section added
+d6453a88847d55b9c04c7af45ab4a48344979176 docs: Adding configuration and usage information to README
+95dfbaa6a32ef36145f219df4fc277563d98f539 feat: Added semantix.yml configuration option
+7a08752888b0a3cad1cc4173947c5dcced440143 chore: Reorganizing files
+b311b8c50dcbe64e11235977276fbb195fa21774 chore: Removing aliases, adding remote specificity for determining version
+f405129d6a7f98b2c4f436886df275de6f4b92af docs: Fixing wrong documentation for package.json
+87dfee2957bc116674b9bd6597220c7134206372 feat: Private repository support
+1e0698f4caeda2cc3a66fd553d3d408358a3b6e9 chore: Remove unused packages
+2e3fdc46d3cab7046d0eb39d623de993c6d7bab7 refactor: Convert to classes, consolidate logic
+e48831ed46049e40aeee36972de0afb91371177a fix: Error handling loading package.json
+435a071f55c061e1b16b0e16db63a2b88ac504dd fix: Error handling for updating package.json
+c49e425d4d0e3a2c214c905ac1956ca2c357fcb9 feat: Create release with GitLab or GitHub providers
+8d372f5b30d67ce6720a42f92086060ea18b04d9 fix: Release process
+e242815b2b1f51c94165384445f0a7587d08c5c8 fix(release): GitHub create release bad request body
+ef9375896c97e3cd89e537411ae64fa9edb0eae9 fix(template): Base template signature
+9ad791f8a3d0c9657deff9489f4975b70ab2199c feat(GitLab): Create Release complete with notes generated from commits
+174f665ac203db8cdfa56ff0eca3262ccaefdefd fix: Configuration provider error on missing file
+83928ddd5aea606dbd25504348412cd2dd8492f8 docs: Release process documentation
+c0d856253bf8b7d41c60c038c49575bb17cc4cd9 test(jest): Adding Jest and Configuration Provider tests
+1f94ad144cfc7a1227b9edb7a057bc7f835a7f32 feat(verbose): Verbose log output
