@@ -77,13 +77,13 @@ Creates a tag and release in your **GitLab** or **GitHub** remote repository.
 
 ### **Requirements**: 
 #### 😸 GitHub
-|||
+|Variable|Name|
 |:-:|:-:|
 |Access Token| `GITHUB_TOKEN` or `GH_TOKEN`|
 |GitHub API URL| `GITHUB_URL`|
 
 #### 🦊 GitLab
-|||
+|Variable|Name|
 |:-:|:-:|
 |Access Token| `GITLAB_TOKEN` or `GL_TOKEN`|
 |GitHub API URL| `GITLAB_URL`|
