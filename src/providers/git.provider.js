@@ -120,7 +120,8 @@ class GitProvider {
      * @returns {string} owner - Name of the repository owner
      */
     async owner() {
-        return (await this.remote()).match(/\/(\w+)\/(\w+).git$/)[1];
+        // TODO: Extract Regex to shared variable with repositoryName()
+        return (await this.remote()).match(/\/(\w+)\/([\w-]+).git$/)[1];
     }
 
     /**
@@ -129,7 +130,8 @@ class GitProvider {
      * @returns {string} repoistoryName - Name of the repository
      */
     async repositoryName() {
-        return (await this.remote()).match(/\/(\w+)\/(\w+).git$/)[2];
+        // TODO: Extract Regex to shared variable with owner()
+        return (await this.remote()).match(/\/(\w+)\/([\w-]+).git$/)[2];
     }
 
     /**
